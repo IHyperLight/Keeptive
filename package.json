@@ -1,0 +1,53 @@
+{
+  "name": "keeptive",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": "Hyper Light",
+  "license": "ISC",
+  "dependencies": {
+    "iconv-lite": "^0.6.3"
+  },
+  "devDependencies": {
+    "electron": "^31.1.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.keeptive.app",
+    "productName": "Keeptive",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "src/**/*",
+      "!src/python/**/*",
+      "!src/*.py"
+    ],
+    "extraFiles": [
+      {
+        "from": "src/python",
+        "to": "src/python",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "src",
+        "to": "src",
+        "filter": [
+          "*.py"
+        ]
+      }
+    ],
+    "win": {
+      "target": "portable",
+      "compression": "normal"
+    },
+    "icon": "src/assets/icon.ico"
+  }
+}

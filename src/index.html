@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keeptive</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self'; 
+        style-src 'self' https://fonts.googleapis.com; 
+        img-src 'self' data:; 
+        font-src 'self' https://fonts.gstatic.com;
+        connect-src 'self';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+</head>
+
+<body>
+    <div class="container no-select">
+        <div class="left">
+            <img id="logo" src="assets/logo.svg">
+            <div class="form-group">
+                <label for="mode">Mode</label>
+                <div id="mode">
+                    <div class="row-part" id="row-top">
+                        <button id="click-mode" title="Mouse click mode" class="mode-button active"><img
+                                src="assets/click.svg"></button>
+                        <button id="move-mode" title="Mouse move mode" class="mode-button"><img
+                                src="assets/move.svg"></button>
+                        <button id="passive-mode" title="Passive activation mode" class="mode-button"><img
+                                src="assets/passive.svg"></button>
+                    </div>
+                    <div class="row-part">
+                        <button id="key-mode" title="Key press mode" class="mode-button"><img
+                                src="assets/key.svg"></button>
+                        <input disabled="true" type="text" id="letter" maxlength="1" pattern="[\x00-\x7F]*"
+                            placeholder="Key">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="one">Auto&emsp;&emsp;&emsp;&nbsp;Interval&emsp;&ensp;&nbsp;Time</label>
+                <div id="one">
+                    <button id="pause-mode" title="Auto pause in foreground" class="pause-button active"><img
+                            src="assets/pause.svg"></button>
+                    <input type="number" id="interval" placeholder="Secs" value="60">
+                    <input type="number" id="time" placeholder="♾️Mins">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="two">
+                    <label for="status">Status</label>
+                    <div class="status">
+                        <div id="circle"></div>
+                        <div id="notice">Inactive</div>
+                    </div>
+                </div>
+            </div>
+            <div id="start-back">
+                <button id="start" title="Start"><svg id="start-svg" width="400" height="400" viewBox="0 0 400 400"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M383.592 226.744c21.877-11.119 21.877-42.37 0-53.488L43.592.453A32 32 0 0 0 42.664 0H17.33C7.358 4.67 0 14.706 0 27.197v345.606C0 385.294 7.358 395.331 17.33 400h25.333q.465-.217.93-.453z"
+                            fill="url(#a)" />
+                        <defs>
+                            <linearGradient id="a" x1="0" y1="0" x2="350" y2="200" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#00FF0A" />
+                                <stop offset="1" stop-color="#00FFC2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </button>
+            </div>
+            <div class="form-group">
+                <div id="error-message" class="fade-out"></div>
+            </div>
+        </div>
+        <div id="scroll-zone" class="right">
+            <div id="search-section">
+                <img id="decor" src="assets/decor.svg">
+                <p>Here you will see all your open windows. Select the ones you want to keep 'active' even if they are
+                    minimized or select the entire system option :)</p>
+                <div class="row-part">
+                    <button id="search-button" title="Search windows">
+                        <img src="assets/search.svg" alt="Search">
+                    </button>
+                    <button id="w-button" title="Entire system">
+                        <svg width="400" height="400" viewBox="0 0 433 433" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M200 0H0v200h200zm0 233H0v200h200zM233 0h200v200H233zm200 233H233v200h200z"
+                                fill="url(#c)" />
+                            <defs>
+                                <linearGradient id="c" x1="411" y1="324.556" x2="0" y2="86.444"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#0F8CE1" />
+                                    <stop offset="1" stop-color="#76F2FF" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="top-section">
+                <button id="refresh-button" title="Reload windows">
+                    <img src="assets/reload.svg" alt="Reload">
+                </button>
+                <button id="close-button" title="Close windows">
+                    <img src="assets/close.svg" alt="Close">
+                </button>
+                <hr>
+            </div>
+            <div id="window-list" class="window-list">
+            </div>
+            <div id="empty-section">
+                <img id="decor" src="assets/empty.svg">
+                <p>No open windows found. Try opening some to keep them active!</p>
+            </div>
+            <div id="loading-section">
+                <svg class="spinner" viewBox="0 0 50 50">
+                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="7"></circle>
+                </svg>
+            </div>
+            <div id="legend">
+                <a href="https://github.com/IHyperLight/Keeptive" draggable="false"><img id="git"
+                        src="assets/git.svg"></a>
+                <p>Made<br>with 🩷 by<br>Hyper Light</p>
+            </div>
+        </div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+
+</html>
