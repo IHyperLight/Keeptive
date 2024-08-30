@@ -1,6 +1,10 @@
 # Keeptive - Automated Window Interaction Tool
 
-Keeptive is a Python-based Windows automation tool designed to interact with the windows on your system by simulating user actions such as clicks and mouse movements to keep them active. The script can handle one or multiple windows simultaneously, manage their states (minimized or restored) to ensure they receive the interaction, and even keep your PC awake for as long as you choose. It also offers options to pause based on window focus, define the interval between interactions, and run for a set duration or indefinitely.
+Keeptive is a Python-based Windows automation tool designed to interact with the windows on your system by simulating user actions such as clicks and mouse movements to keep them active. 
+
+The script can handle one or multiple windows simultaneously, manage their states (minimized or restored) to ensure they receive the interaction, and even keep your PC awake for as long as you choose. 
+
+It also offers options to pause based on window focus, define the interval between interactions, and run for a set duration or indefinitely.
 
 ![Keeptive UI](https://drive.google.com/uc?export=view&id=1tiZbpRRwd0IjGuKZDPAsWFSDCxQQ0Mts)
 
