@@ -8,19 +8,6 @@ import sys
 
 
 def click(mode, pause, interval, timed, window_strings):
-    # Función para enviar click en todo el sistema
-    def click_system(mode):
-        if mode == "move":
-            # Obtener la posición actual del cursor
-            x, y = pyautogui.position()
-            # Mover el cursor un pixel y devolverlo
-            pyautogui.moveTo(x + 1, y)
-            pyautogui.moveTo(x, y)
-        elif mode == "click":
-            pyautogui.click()
-        else:
-            pyautogui.press(mode)
-
     # Función para obtener los minutos si es que se especificó tiempo y generar una época
     def start_timer(timed):
         if timed != "":
@@ -33,30 +20,26 @@ def click(mode, pause, interval, timed, window_strings):
             print(f"Time completed", file=sys.stderr)
             sys.exit(4)
 
-    minutes, begin = start_timer(timed)
-    # Comprobar si se eligió todo el sistema
-    if window_strings[0] == "":
-        while True:
-            click_system(mode)
-            time.sleep(interval)
-            stop_timer(minutes, begin)
-
-    # Actualizar valor de pause
-    if pause == "true":
-        pause = True
-    else:
-        pause = False
-    # Actualizar formato y valores de las ventanas
-    window_titles = [string.strip() for string in window_strings[0].split(",")]
-    windows = [
-        gw.getWindowsWithTitle(title)[0]
-        for title in window_titles
-        if gw.getWindowsWithTitle(title)
-    ]
-    # Comprobar si las ventanas existen
-    if len(windows) != len(window_titles):
-        print(f"Not all specified windows were found", file=sys.stderr)
-        sys.exit(1)
+    # Función para enviar click en todo el sistema
+    def click_system(mode):
+        if mode == "move":
+            # Obtener la posición actual del cursor
+            x, y = pyautogui.position()
+            # Mover el cursor un pixel y devolverlo
+            pyautogui.moveTo(x + 1, y)
+            pyautogui.moveTo(x, y)
+        elif mode == "click":
+            pyautogui.click()
+        else:
+            key = mode.lower()
+            if key in pyautogui.KEYBOARD_KEYS:
+                pyautogui.press(key)
+            else:
+                print(
+                    f"Enter a valid key or key name to use the key mode",
+                    file=sys.stderr,
+                )
+                sys.exit(5)
 
     # Función para enviar clic por ventana
     def click_window(window):
@@ -113,13 +96,47 @@ def click(mode, pause, interval, timed, window_strings):
             print(f"Error sending command to window", file=sys.stderr)
             sys.exit(3)
 
+    # Comprobar si se eligió todo el sistema
+    if window_strings[0] == "":
+        minutes, begin = start_timer(timed)
+        end_time = begin + minutes if minutes else None
+        # Iniciar ciclo de clics en todo el sistema
+        while True:
+            click_system(mode)
+            stop_timer(minutes, begin)
+            time.sleep(min(interval, end_time - time.time()) if end_time else interval)
+            if end_time and time.time() >= end_time:
+                print(f"Time completed", file=sys.stderr)
+                sys.exit(4)
+
+    # Actualizar valor de pause
+    if pause == "true":
+        pause = True
+    else:
+        pause = False
+    # Actualizar formato y valores de las ventanas
+    window_titles = [string.strip() for string in window_strings[0].split(",")]
+    windows = [
+        gw.getWindowsWithTitle(title)[0]
+        for title in window_titles
+        if gw.getWindowsWithTitle(title)
+    ]
+    # Comprobar si las ventanas existen
+    if len(windows) != len(window_titles):
+        print(f"Not all specified windows were found", file=sys.stderr)
+        sys.exit(1)
+
     minutes, begin = start_timer(timed)
-    # Iniciar el ciclo de clics
+    end_time = begin + minutes if minutes else None
+    # Iniciar ciclo de clics en ventanas específicas
     while True:
         for window in windows:
             click_window(window)
-        time.sleep(interval)
         stop_timer(minutes, begin)
+        time.sleep(min(interval, end_time - time.time()) if end_time else interval)
+        if end_time and time.time() >= end_time:
+            print(f"Time completed", file=sys.stderr)
+            sys.exit(4)
 
 
 if __name__ == "__main__":

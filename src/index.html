@@ -40,8 +40,7 @@
                     <div class="row-part">
                         <button id="key-mode" title="Key press mode" class="mode-button"><img
                                 src="assets/key.svg"></button>
-                        <input disabled="true" type="text" id="letter" maxlength="1" pattern="[\x00-\x7F]*"
-                            placeholder="Key">
+                        <input disabled="true" pattern="[^\s]*" type="text" id="letter" maxlength="12" placeholder="Key">
                     </div>
                 </div>
             </div>
@@ -125,7 +124,7 @@
             </div>
             <div id="loading-section">
                 <svg class="spinner" viewBox="0 0 50 50">
-                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="7"></circle>
+                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="6"></circle>
                 </svg>
             </div>
             <div id="legend">

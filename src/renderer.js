@@ -203,8 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerErrorFade();
     };
 
-    const isASCII = (str) => /^[\x00-\x7F]*$/.test(str);
-
     const handleError = (event, message) => {
         const error = new TextDecoder().decode(message);
         displayErrorMessage(error);
@@ -267,11 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (mode === 'key' && !key) {
                     displayErrorMessage('Enter a key to use the key mode');
-                    return;
-                }
-
-                if (mode === 'key' && !isASCII(key)) {
-                    displayErrorMessage('Enter a valid key to use the key mode');
                     return;
                 }
 
@@ -386,15 +379,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    elements.interval.addEventListener('input', () => {
+        if (elements.interval.value === '') {
+            elements.interval.value = '';
+        }
+    });
+
     elements.letter.addEventListener('change', () => {
         if (status) {
             handleChange(elements.letter, key);
         }
     });
 
+    elements.letter.addEventListener('input', () => {
+        elements.letter.value = elements.letter.value.replace(/\s+/g, '');
+    });
+
     elements.time.addEventListener('change', () => {
         if (status) {
             handleChange(elements.time, time);
+        }
+    });
+
+    elements.time.addEventListener('input', () => {
+        if (elements.time.value === '') {
+            elements.time.value = '';
         }
     });
 
