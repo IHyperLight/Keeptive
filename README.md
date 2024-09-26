@@ -14,7 +14,7 @@
 
 - **🚥 Window State Management**: Handles minimized windows, restores them for interaction, and then positions them discreetly in the background without disrupting the user experience.
 
-- **⏸️ Focus-Aware Clicking**: Optional pause functionality to avoid interaction when the target window is already in the foreground.
+- **⏸️ Focus-Aware Activation**: Optional pause functionality to avoid interaction when the target window is already in the foreground.
 
 - **📍 Screen Location Selector**: Optional functionality to select a specific location on the screen for click and mouse movement activation modes.
 
