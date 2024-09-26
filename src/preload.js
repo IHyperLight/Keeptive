@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
                     document.getElementById('top-section').style.display = 'block';
                     document.getElementById('empty-section').style.display = 'flex';
                 } else {
+                    document.getElementById('windows-label').style.display = 'block';
                     validWindows.forEach(window => {
                         const button = document.createElement('button');
                         button.textContent = window;
@@ -40,6 +41,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
             .catch(error => {
             });
     },
+    getLocation: (command) => {
+        return ipcRenderer.invoke('get-location', command)
+            .then(response => {
+                return response;
+            })
+            .catch(error => {
+            });
+    },
+    activateKey: (callback) => ipcRenderer.on('activate-key', callback),
+    minimizeWindow: () => ipcRenderer.send('minimize-window'),
+    restoreWindow: () => ipcRenderer.send('restore-window'),
     isRunning: () => {
         return ipcRenderer.invoke('is-running')
             .then(response => {

@@ -7,7 +7,28 @@ import time
 import sys
 
 
-def click(mode, pause, interval, timed, window_strings):
+def clicks(mode, pause, interval, timed, location, click, window_strings):
+    # Función para obtener las coordenadas exactas donde hacer click o hacia donde mover el mouse
+    def get_location(hwnd):
+        # Obtener el rectángulo de la ventana
+        window_rect = win32gui.GetWindowRect(hwnd)
+
+        # Verificar si se eligieron coordenadas específicas para las acciones de click o movimiento
+        if location == "":
+            x = (window_rect[0] + window_rect[2]) // 2
+            y = (window_rect[1] + window_rect[3]) // 2
+        else:
+            ax, ay = map(int, location.split(","))
+            left, top, right, bottom = window_rect
+
+            if ax < left or ax > right or ay < top or ay > bottom:
+                print(f"Picked location outside the window margins", file=sys.stderr)
+                sys.exit(6)
+            else:
+                x = ax - left
+                y = ay - top
+        return x, y
+
     # Función para obtener los minutos si es que se especificó tiempo y generar una época
     def start_timer(timed):
         if timed != "":
@@ -23,20 +44,40 @@ def click(mode, pause, interval, timed, window_strings):
     # Función para enviar click en todo el sistema
     def click_system(mode):
         if mode == "move":
-            # Obtener la posición actual del cursor
-            x, y = pyautogui.position()
-            # Mover el cursor un pixel y devolverlo
-            pyautogui.moveTo(x + 1, y)
-            pyautogui.moveTo(x, y)
+            if location == "":
+                # Obtener la posición actual del cursor
+                x, y = pyautogui.position()
+                # Mover el cursor un pixel y devolverlo
+                pyautogui.moveTo(x + 1, y)
+                pyautogui.moveTo(x, y)
+            else:
+                x, y = map(int, location.split(","))
+                pyautogui.moveTo(x, y, duration=0.5)
         elif mode == "click":
-            pyautogui.click()
+            if location == "":
+                # Evaluación del botón del mouse seleccionado
+                if click == "L-click":
+                    pyautogui.click()
+                elif click == "R-click":
+                    pyautogui.click(button="right")
+                elif click == "M-click":
+                    pyautogui.click(button="middle")
+            else:
+                x, y = map(int, location.split(","))
+                # Evaluación del botón del mouse seleccionado
+                if click == "L-click":
+                    pyautogui.click(x, y)
+                elif click == "R-click":
+                    pyautogui.click(x, y, button="right")
+                elif click == "M-click":
+                    pyautogui.click(x, y, button="middle")
         else:
             key = mode.lower()
             if key in pyautogui.KEYBOARD_KEYS:
                 pyautogui.press(key)
             else:
                 print(
-                    f"Enter a valid key or key name to use the key mode",
+                    f"Enter a valid key or key name to use the key press mode",
                     file=sys.stderr,
                 )
                 sys.exit(5)
@@ -59,25 +100,39 @@ def click(mode, pause, interval, timed, window_strings):
             if win32gui.IsIconic(hwnd):
                 minimized_status = True
                 win32gui.ShowWindow(hwnd, win32con.SW_SHOWNOACTIVATE)
-                time.sleep(0.1)
+                time.sleep(0.01)
                 win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-            # Obtener el rectángulo de la ventana
-            window_rect = win32gui.GetWindowRect(hwnd)
-            x = (window_rect[0] + window_rect[2]) // 2
-            y = (window_rect[1] + window_rect[3]) // 2
             # Evaluar modo
             if mode == "move":
+                # Obtener ubicación según la elección del usuario
+                x, y = get_location(hwnd)
                 # Enviar un movimiento de mouse
                 lParam = y << 16 | x
                 win32api.SendMessage(hwnd, win32con.WM_MOUSEMOVE, 0, lParam)
             elif mode == "click":
+                # Obtener ubicación según la elección del usuario
+                x, y = get_location(hwnd)
                 # Enviar un clic en el centro de la ventana
                 lParam = win32api.MAKELONG(x, y)
-                win32api.SendMessage(
-                    hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam
-                )
-                time.sleep(0.1)
-                win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, lParam)
+                # Evaluación del botón del mouse seleccionado
+                if click == "L-click":
+                    win32api.SendMessage(
+                        hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lParam
+                    )
+                    time.sleep(0.01)
+                    win32api.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, lParam)
+                elif click == "R-click":
+                    win32api.SendMessage(
+                        hwnd, win32con.WM_RBUTTONDOWN, win32con.MK_RBUTTON, lParam
+                    )
+                    time.sleep(0.01)
+                    win32api.SendMessage(hwnd, win32con.WM_RBUTTONUP, 0, lParam)
+                elif click == "M-click":
+                    win32api.SendMessage(
+                        hwnd, win32con.WM_MBUTTONDOWN, win32con.MK_MBUTTON, lParam
+                    )
+                    time.sleep(0.01)
+                    win32api.SendMessage(hwnd, win32con.WM_MBUTTONUP, 0, lParam)
             elif mode == "passive":
                 # Enviar la instrucción de activación a la ventana
                 win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0)
@@ -148,5 +203,7 @@ if __name__ == "__main__":
         timed = float(sys.argv[4])
     else:
         timed = sys.argv[4]
-    window_strings = sys.argv[5:]
-    click(mode, pause, interval, timed, window_strings)
+    location = sys.argv[5]
+    click = sys.argv[6]
+    window_strings = sys.argv[7:]
+    clicks(mode, pause, interval, timed, location, click, window_strings)

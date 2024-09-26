@@ -1,20 +1,22 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron');
 const path = require('path');
 const { exec, spawn } = require('child_process');
 const iconv = require('iconv-lite');
 
 let pythonProcess = null;
+let locate = null;
 
 const pythonExecutable = path.join('src/python/pythonw.exe');
 const getPath = path.join('src/get.py');
+const getLocation = path.join('src/locate.py');
 const clickPath = path.join('src/click.py');
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 660,
-        minWidth: 800,
-        minHeight: 660,
+        width: 928,
+        height: 679,
+        minWidth: 928,
+        minHeight: 679,
         icon: path.join(__dirname, 'src/assets/icon.ico'),
         webPreferences: {
             preload: path.join(__dirname, 'src/preload.js'),
@@ -31,6 +33,10 @@ function createWindow() {
         mainWindow.show();
     });
 
+    globalShortcut.register('F6', () => {
+        mainWindow.webContents.send('activate-key');
+    });
+
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
         if (url.startsWith('http')) {
             shell.openExternal(url);
@@ -44,6 +50,39 @@ function createWindow() {
             event.preventDefault();
             shell.openExternal(url);
         }
+    });
+
+    ipcMain.on('minimize-window', () => {
+        mainWindow.minimize();
+    });
+
+    ipcMain.on('restore-window', () => {
+        if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+        }
+    });
+
+    ipcMain.handle('get-location', async () => {
+        return new Promise((resolve, reject) => {
+            locate = spawn(pythonExecutable, [getLocation], { encoding: 'utf8' });
+
+            let output = '';
+
+            locate.stdout.on('data', (data) => {
+                output = data.toString();
+            });
+
+            locate.stderr.on('data', (data) => {
+                locate = null;
+            });
+
+            locate.on('close', (code) => {
+                locate = null;
+                resolve(output);
+            });
+
+            mainWindow.minimize();
+        });
     });
 
     ipcMain.handle('get-window-list', async () => {
@@ -105,6 +144,10 @@ app.whenReady().then(() => {
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
+});
+
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll();
 });
 
 app.on('window-all-closed', function () {

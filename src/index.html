@@ -27,30 +27,42 @@
         <div class="left">
             <img id="logo" src="assets/logo.svg">
             <div class="form-group">
-                <label for="mode">Mode</label>
+                <label for="mode">Activation Modes</label>
                 <div id="mode">
                     <div class="row-part" id="row-top">
-                        <button id="click-mode" title="Mouse click mode" class="mode-button active"><img
-                                src="assets/click.svg"></button>
-                        <button id="move-mode" title="Mouse move mode" class="mode-button"><img
-                                src="assets/move.svg"></button>
-                        <button id="passive-mode" title="Passive activation mode" class="mode-button"><img
-                                src="assets/passive.svg"></button>
+                        <button id="click-mode" class="mode-button active" title="Select to use the discrete
+activation mode by mouse clicks"><img src="assets/click.svg"></button>
+                        <input pattern="[^\s]*" type="text" class="no-select" id="click" maxlength="12" value="L-click"
+                            readonly title="Click to change the mouse button
+to press in mouse clicks mode">
+                        <button id="move-mode" class="mode-button" title="Select to use the discrete activation
+mode by mouse movement"><img src="assets/move.svg"></button>
+                        <button id="passive-mode" class="mode-button" title="Select to use the discrete
+passive activation mode"><img src="assets/passive.svg"></button>
                     </div>
                     <div class="row-part">
-                        <button id="key-mode" title="Key press mode" class="mode-button"><img
-                                src="assets/key.svg"></button>
-                        <input disabled="true" pattern="[^\s]*" type="text" id="letter" maxlength="12" placeholder="Key">
+                        <button id="key-mode" class="mode-button" title="Select to use the discrete
+activation mode by key press"><img src="assets/key.svg"></button>
+                        <input disabled="true" pattern="[^\s]*" type="text" id="letter" maxlength="12" placeholder="Key"
+                            title="Enter the key or the valid key name
+to press in key press mode">
                     </div>
                 </div>
             </div>
             <div class="form-group">
-                <label for="one">Auto&emsp;&emsp;&emsp;&nbsp;Interval&emsp;&ensp;&nbsp;Time</label>
+                <label
+                    for="one">Auto&emsp;&emsp;&emsp;&nbsp;Pick&emsp;&emsp;&emsp;&ensp;Interval&emsp;&ensp;&nbsp;Time</label>
                 <div id="one">
-                    <button id="pause-mode" title="Auto pause in foreground" class="pause-button active"><img
-                            src="assets/pause.svg"></button>
-                    <input type="number" id="interval" placeholder="Secs" value="60" step="any">
-                    <input type="number" id="time" placeholder="♾️Mins" step="any">
+                    <button id="pause-mode" class="pause-button active" title="Select to automatically pause activation
+only when the window is in the foreground"><img src="assets/pause.svg"></button>
+                    <button id="location-button" title="Select to pick a specific location for some activation
+modes. Deselect to use the center of the window">
+                        <img src="assets/location.svg" alt="Location">
+                    </button>
+                    <input type="number" id="interval" placeholder="Secs" value="60" step="any" title="Enter a value in seconds for the time interval
+between each action of the selected activation mode">
+                    <input type="number" id="time" placeholder="♾️Mins" step="any" title="Enter a value in minutes for the duration you want to run the
+activation. Leave the field empty to run the activation indefinitely">
                 </div>
             </div>
             <div class="form-group">
@@ -63,7 +75,8 @@
                 </div>
             </div>
             <div id="start-back">
-                <button id="start" title="Start"><svg id="start-svg" width="400" height="400" viewBox="0 0 400 400"
+                <button id="start" title="Press F6 or click to start the discrete activation with the
+chosen parameters in the selected activatable mode"><svg id="start-svg" width="400" height="400" viewBox="0 0 400 400"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M383.592 226.744c21.877-11.119 21.877-42.37 0-53.488L43.592.453A32 32 0 0 0 42.664 0H17.33C7.358 4.67 0 14.706 0 27.197v345.606C0 385.294 7.358 395.331 17.33 400h25.333q.465-.217.93-.453z"
@@ -84,13 +97,18 @@
         <div id="scroll-zone" class="right">
             <div id="search-section">
                 <img id="decor" src="assets/decor.svg">
-                <p>Here you will see all your open windows. Select the ones you want to keep 'active' even if they are
-                    minimized or select the entire system option :)</p>
+                <p>Here you will see all your open windows. Search the ones you want to keep active discreetly even if
+                    they are minimized or choose the entire system option :)</p>
+                <div id="hr-impostor"></div>
+                <p>❔&nbsp;Hover over any button or input field for more info</p>
+                <label id="search-label" for="row-part">Activatable Modes</label>
                 <div class="row-part">
-                    <button id="search-button" title="Search windows">
+                    <button id="search-button" title="Click to search for all open windows to select the ones you
+want to keep active with your preferred activation mode">
                         <img src="assets/search.svg" alt="Search">
                     </button>
-                    <button id="w-button" title="Entire system">
+                    <button id="w-button" title="Select to keep the entire system active
+with your preferred activation mode">
                         <svg width="400" height="400" viewBox="0 0 433 433" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -108,14 +126,18 @@
                 </div>
             </div>
             <div id="top-section">
-                <button id="refresh-button" title="Reload windows">
+                <label id="top-label" for="top-section">Reload&emsp;&emsp;Back</label>
+                <button id="refresh-button" title="Click to re-search
+all open windows">
                     <img src="assets/reload.svg" alt="Reload">
                 </button>
-                <button id="close-button" title="Close windows">
+                <button id="close-button" title="Click to go back to
+the previous screen">
                     <img src="assets/close.svg" alt="Close">
                 </button>
                 <hr>
             </div>
+            <label id="windows-label" for="window-list">Found Windows</label>
             <div id="window-list" class="window-list">
             </div>
             <div id="empty-section">
@@ -124,8 +146,9 @@
             </div>
             <div id="loading-section">
                 <svg class="spinner" viewBox="0 0 50 50">
-                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="6"></circle>
+                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="6.5"></circle>
                 </svg>
+                <p>Searching windows...</p>
             </div>
             <div id="legend">
                 <a href="https://github.com/IHyperLight/Keeptive" draggable="false"><img id="git"

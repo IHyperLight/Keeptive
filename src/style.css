@@ -5,7 +5,7 @@ html {
 body {
     background-color: #202020;
     box-sizing: border-box !important;
-    color: #FFFFFF;
+    color: #e0e0e0;
     display: flex;
     font-family: 'Poppins', sans-serif !important;
     height: 100vh;
@@ -63,7 +63,6 @@ body {
     background-color: #202020;
     border: none;
     border-radius: 13px;
-    color: #FFFFFF;
     cursor: pointer;
     font-family: 'Poppins', sans-serif !important;
     font-size: 15px;
@@ -79,8 +78,8 @@ body {
 }
 
 #logo {
-    margin: 1.36rem 0 0.12rem -0.45rem;
-    width: 17.56rem;
+    margin: 1.1rem 0 -0.06rem -0.47rem;
+    width: 20.26rem;
 }
 
 button {
@@ -137,6 +136,11 @@ input[type="number"]::-webkit-outer-spin-button {
     width: 4rem;
 }
 
+#click {
+    margin-right: 1.25rem;
+    width: 4rem;
+}
+
 .window-list button {
     background-color: #2d2d2d;
     border: none;
@@ -164,7 +168,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 #decor {
-    width: 4.8rem;
+    width: 5.95rem;
 }
 
 #search-section {
@@ -177,12 +181,13 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 #search-section p,
-#empty-section p {
+#empty-section p,
+#loading-section p {
     color: #555555;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
-    margin-top: 0.90rem;
-    margin-bottom: 0.95rem;
+    margin-top: 0.875rem;
+    margin-bottom: 0.69rem;
     text-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
 }
 
@@ -260,7 +265,8 @@ input[type="number"]::-webkit-outer-spin-button {
     text-align: center;
 }
 
-#top-section button {
+#refresh-button,
+#close-button {
     background-color: #2d2d2d;
     border: none;
     border-radius: 13px;
@@ -274,18 +280,33 @@ input[type="number"]::-webkit-outer-spin-button {
     transition: background-color 0.3s ease;
 }
 
-#top-section button:hover {
-    background-color: #434343 !important;
+#refresh-button:hover,
+#close-button:hover {
+    background-color: #434343;
 }
 
-#top-section img {
+#refresh-button img,
+#close-button img {
     height: 1.9rem;
     margin: 0.18rem 0.02rem 0 0;
     width: 1.9rem;
 }
 
+#location-button img {
+    height: 2.1rem;
+    width: 2.1rem;
+}
+
+#location-button.stand {
+    background: linear-gradient(120deg, #FF9900, #FF9900) !important;
+}
+
 #refresh-button {
     margin-right: 1rem;
+}
+
+#pause-mode {
+    margin-right: 1.25rem;
 }
 
 hr {
@@ -293,8 +314,14 @@ hr {
     border-top: 1px solid #404040;
 }
 
+#hr-impostor {
+    border-top: 1px solid #404040;
+    width: 100%;
+    margin-top: 0.249rem;
+}
+
 .window-list {
-    margin: 1.25rem 0 -1.85rem;
+    margin: 0.85rem 0 -1.21rem;
 }
 
 ::-webkit-scrollbar {
@@ -332,8 +359,8 @@ hr {
 .spinner {
     animation: rotate 2s linear infinite;
     z-index: 1;
-    height: 6rem;
-    width: 6rem;
+    height: 7rem;
+    width: 7rem;
 
     & .path {
         stroke: #606060;
@@ -423,7 +450,8 @@ hr {
 }
 
 .pause-button,
-.mode-button {
+.mode-button,
+#location-button {
     background-color: #363636;
     border: none;
     border-radius: 13px;
@@ -436,7 +464,8 @@ hr {
 }
 
 .pause-button.active,
-.mode-button.active {
+.mode-button.active,
+#location-button.active {
     background: linear-gradient(120deg, #00FF0A, #00FFC2) !important;
 }
 
@@ -451,7 +480,8 @@ hr {
 }
 
 .pause-button:hover,
-.mode-button:hover {
+.mode-button:hover,
+#location-button:hover {
     background-color: #434343;
 }
 
@@ -498,6 +528,30 @@ hr {
     opacity: 0;
 }
 
+#windows-label {
+    margin-top: 0.9rem;
+    font-size: 15px;
+    font-weight: bold;
+    display: none;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+}
+
+#search-label {
+    margin-right: 0.2rem;
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+}
+
+#top-label {
+    margin-right: 1.4rem;
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+}
+
 input:disabled,
 button:disabled {
     opacity: 30%;
@@ -516,7 +570,7 @@ input:focus,
 }
 
 .no-select {
-    user-select: none;
+    user-select: none !important;
 }
 
 img {

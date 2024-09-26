@@ -4,14 +4,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let previous;
     let key;
     let pause;
+    let pick;
+    let ongoing;
     let w;
+    let location = '';
+    let px = 0;
+    let py = 0;
+    let tx = 0;
+    let ty = 0;
     let selectedWindows;
     let time;
     let status = false;
     let errorMessageTimeout;
     let changes = 0;
-    let flag1 = false;
-    let flag2 = false;
+    let flag = false;
+    const flags = new Map();
+    let index = 0;
+    const values = ["L-click", "R-click", "M-click"];
+    let click;
 
     const elements = {
         errorMessage: document.getElementById('error-message'),
@@ -39,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
         moveModeButton: document.getElementById('move-mode'),
         passiveModeButton: document.getElementById('passive-mode'),
         keyModeButton: document.getElementById('key-mode'),
+        locationButton: document.getElementById('location-button'),
+        windowsLabel: document.getElementById('windows-label'),
+        clicks: document.getElementById('click'),
     };
 
     const updateButtonState = (status) => {
@@ -54,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             circle: 'linear-gradient(120deg, #00FF0A, #00FFC2)',
             notice: 'linear-gradient(90deg, #00FF0A, #00FF0A, #00FFC2)',
             noticeText: 'Active',
-            toolTip: 'Stop'
+            toolTip: 'Press F6 or click to stop the\ncurrent activation process'
         } : {
             buttonText: `<path
                             d="M383.592 226.744c21.877-11.119 21.877-42.37 0-53.488L43.592.453A32 32 0 0 0 42.664 0H17.33C7.358 4.67 0 14.706 0 27.197v345.606C0 385.294 7.358 395.331 17.33 400h25.333q.465-.217.93-.453z"
@@ -69,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             circle: 'linear-gradient(120deg, #FF0000, #FF9900)',
             notice: 'linear-gradient(90deg, #FF0000, #FF0000, #FF9900)',
             noticeText: 'Inactive',
-            toolTip: 'Start'
+            toolTip: 'Press F6 or click to start the discrete activation with the\nchosen parameters in the selected activatable mode'
         };
 
         elements.startButton.title = activeStyle.toolTip;
@@ -82,17 +95,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const resetChangeFade = () => {
-        flag1 = false;
-        flag2 = false;
+        flag = false;
+        flags.clear();
         changes = 0;
         elements.errorMessage.classList.add('fade-out');
     };
 
     const displayChangeMessage = () => {
         if (changes === 1) {
-            elements.errorMessage.textContent = `A change was made, restart to apply`;
+            elements.errorMessage.textContent = `A change has been made. Please stop and start again to apply it`;
         } else {
-            elements.errorMessage.textContent = `${changes} changes was made, restart to apply`;
+            elements.errorMessage.textContent = `${changes} changes have been made. Please stop and start again to apply them`;
         }
         elements.errorMessage.style.color = '#FF9900';
         elements.errorMessage.classList.remove('fade-out');
@@ -109,19 +122,22 @@ document.addEventListener('DOMContentLoaded', () => {
             newValue = element;
         }
 
+        const access = element.id;
+        let restriction = flags.get(access) || false;
+
         if (Array.isArray(newValue)) {
             if (value.length === newValue.length && value.every((element, index) => element === newValue[index])) {
                 changes--;
-                flag1 = false;
+                flag = false;
                 if (changes === 0) {
                     resetChangeFade();
                 } else {
                     displayChangeMessage();
                 }
             } else {
-                if (!flag1) {
+                if (!flag) {
                     changes++;
-                    flag1 = true;
+                    flag = true;
                     displayChangeMessage();
                 }
             }
@@ -133,14 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         displayChangeMessage();
                     }
                 } else {
-                    if (element.tagName === 'INPUT') {
-                        if (!flag2) {
-                            changes++;
-                            flag2 = true;
-                            displayChangeMessage();
-                        }
-                    } else {
+                    if (!restriction) {
                         changes++;
+                        restriction = true;
+                        flags.set(access, restriction);
                         displayChangeMessage();
                     }
                 }
@@ -148,9 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (changes > 0) {
                     changes--;
                 }
-                if (element.tagName === 'INPUT') {
-                    flag2 = false;
-                }
+                restriction = false;
+                flags.set(access, restriction);
                 if (changes === 0) {
                     resetChangeFade();
                 } else {
@@ -214,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.refreshButton.disabled = true;
         elements.closeButton.disabled = true;
         elements.windowList.innerHTML = '';
+        elements.windowsLabel.style.display = 'none';
         elements.emtpySection.style.display = 'none';
         elements.scrollZone.style.overflowY = 'hidden';
         elements.loadingSection.style.display = 'flex';
@@ -222,6 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleClose = () => {
+        elements.windowsLabel.style.display = 'none';
         elements.emtpySection.style.display = 'none';
         elements.searchSection.style.display = 'flex';
         elements.topSection.style.display = 'none';
@@ -229,6 +242,11 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.windowList.innerHTML = '';
         elements.scrollZone.style.overflowY = 'hidden';
         stop();
+    };
+
+    const trackCursor = async () => {
+        location = await window.electronAPI.getLocation();
+        window.electronAPI.restoreWindow();
     };
 
     const handleStartClick = () => {
@@ -239,11 +257,19 @@ document.addEventListener('DOMContentLoaded', () => {
             previous = mode;
             key = elements.letter.value;
             pause = elements.pauseButton.classList.contains('active');
+            pick = elements.locationButton.classList.contains('active');
+            ongoing = elements.locationButton.classList.contains('stand');
             w = elements.wButton.classList.contains('active');
             selectedWindows = [...document.querySelectorAll('#window-list button.selected')].map(button => button.textContent);
             time = elements.time.value;
+            click = elements.clicks.value;
 
             if (!status) {
+                if (ongoing) {
+                    displayErrorMessage('Pick a location or deselect the option before starting');
+                    return;
+                }
+
                 if ((mode === 'click' && selectedWindows.length === 0 && !w) || (mode === 'move' && selectedWindows.length === 0 && !w)) {
                     displayErrorMessage('Select at least one window or the entire system option');
                     return;
@@ -254,8 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                if (mode === 'passive') {
-                    interval = 0.1;
+                if (mode === 'passive' && interval < 5) {
+                    displayErrorMessage('Enter a higher interval value to avoid potential issues with the passive activation');
+                    return;
                 }
 
                 if (mode === 'key' && !w) {
@@ -285,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const windowsList = selectedWindows.map(window => window.replace(/\r$/, '')).join(', ');
-            command = [(mode === 'key' ? key : mode), pause, interval, time, (w ? '' : windowsList)];
+            command = [(mode === 'key' ? key : mode), pause, interval, time, (location ? location : ''), click, (w ? '' : windowsList)];
         }
 
         window.electronAPI.isRunning().then(isRunning => {
@@ -310,6 +337,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    window.electronAPI.activateKey(() => {
+        window.electronAPI.restoreWindow();
+        handleStartClick();
+    });
+
     const observer1 = new MutationObserver((mutationsList) => {
         for (let mutation of mutationsList) {
             if (mutation.attributeName === 'class' || mutation.attributeName === 'disabled') {
@@ -333,9 +365,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (elements.keyModeButton.classList.contains('active')) {
                     elements.searchButton.disabled = true;
                     elements.letter.disabled = false;
+                    elements.locationButton.disabled = true;
                 } else {
                     elements.searchButton.disabled = false;
                     elements.letter.disabled = true;
+                    if (!elements.locationButton.classList.contains('active')) {
+                        elements.locationButton.disabled = false;
+                    }
                 }
             }
         }
@@ -346,16 +382,31 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let mutation of mutationsList) {
             if (mutation.attributeName === 'class') {
                 if (elements.passiveModeButton.classList.contains('active')) {
-                    elements.interval.disabled = true;
                     elements.wButton.disabled = true;
+                    elements.locationButton.disabled = true;
                 } else {
-                    elements.interval.disabled = false;
                     elements.wButton.disabled = false;
+                    if (!elements.keyModeButton.classList.contains('active')) {
+                        elements.locationButton.disabled = false;
+                    }
                 }
             }
         }
     });
     observer3.observe(elements.passiveModeButton, { attributes: true });
+
+    const observer4 = new MutationObserver((mutationsList) => {
+        for (let mutation of mutationsList) {
+            if (mutation.attributeName === 'class') {
+                if (elements.clickModeButton.classList.contains('active')) {
+                    elements.clicks.disabled = false;
+                } else {
+                    elements.clicks.disabled = true;
+                }
+            }
+        }
+    });
+    observer4.observe(elements.clickModeButton, { attributes: true });
 
     elements.clickModeButton.addEventListener('click', () => {
         selectMode('click-mode');
@@ -383,6 +434,89 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elements.interval.value === '') {
             elements.interval.value = '';
         }
+
+        let value = elements.interval.value;
+        const parts = value.split('.');
+
+        if (parts.length > 2) {
+            elements.interval.value = value.slice(0, -1);
+            return;
+        }
+
+        if (parts[0].length > 6) {
+            elements.interval.value = parts[0].slice(0, 6) + (parts[1] ? '.' + parts[1] : '');
+            return;
+        }
+
+        if (parts[1] && parts[1].length > 3) {
+            elements.interval.value = parts[0] + '.' + parts[1].slice(0, 3);
+        }
+    });
+
+    elements.interval.addEventListener('wheel', function (event) {
+        event.preventDefault();
+
+        let step = 1;
+        let currentValue = parseFloat(this.value) || 0;
+
+        function getDecimalCount(value) {
+            if (Math.floor(value) === value) return 0;
+            return value.toString().split(".")[1]?.length || 0;
+        }
+
+        let decimalCount = getDecimalCount(currentValue);
+        let maxLimit = 999999;
+
+        if (event.deltaY < 0) {
+            let newValue = currentValue + step;
+            if (newValue > maxLimit) {
+                this.value = maxLimit.toFixed(0);
+            } else {
+                this.value = newValue.toFixed(decimalCount);
+            }
+        } else {
+            if (currentValue > 0) {
+                let newValue = currentValue - step;
+                if (newValue <= 0) {
+                    this.value = '';
+                } else {
+                    this.value = newValue.toFixed(decimalCount);
+                }
+            }
+        }
+    });
+
+    elements.interval.addEventListener('keydown', function (event) {
+        let step = 1;
+        let currentValue = parseFloat(this.value) || 0;
+
+        function getDecimalCount(value) {
+            if (Math.floor(value) === value) return 0;
+            return value.toString().split(".")[1]?.length || 0;
+        }
+
+        let decimalCount = getDecimalCount(currentValue);
+        let maxLimit = 999999;
+
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            let newValue = currentValue + step;
+            if (newValue > maxLimit) {
+                this.value = maxLimit.toFixed(0);
+            } else {
+                this.value = newValue.toFixed(decimalCount);
+            }
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            if (currentValue > 0) {
+                let newValue = currentValue - step;
+                if (newValue <= 0) {
+                    this.value = '';
+                } else {
+                    this.value = newValue.toFixed(decimalCount);
+                }
+            }
+        }
     });
 
     elements.letter.addEventListener('change', () => {
@@ -404,6 +538,89 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.time.addEventListener('input', () => {
         if (elements.time.value === '') {
             elements.time.value = '';
+        }
+
+        let value = elements.time.value;
+        const parts = value.split('.');
+
+        if (parts.length > 2) {
+            elements.time.value = value.slice(0, -1);
+            return;
+        }
+
+        if (parts[0].length > 6) {
+            elements.time.value = parts[0].slice(0, 6) + (parts[1] ? '.' + parts[1] : '');
+            return;
+        }
+
+        if (parts[1] && parts[1].length > 3) {
+            elements.time.value = parts[0] + '.' + parts[1].slice(0, 3);
+        }
+    });
+
+    elements.time.addEventListener('wheel', function (event) {
+        event.preventDefault();
+
+        let step = 1;
+        let currentValue = parseFloat(this.value) || 0;
+
+        function getDecimalCount(value) {
+            if (Math.floor(value) === value) return 0;
+            return value.toString().split(".")[1]?.length || 0;
+        }
+
+        let decimalCount = getDecimalCount(currentValue);
+        let maxLimit = 999999;
+
+        if (event.deltaY < 0) {
+            let newValue = currentValue + step;
+            if (newValue > maxLimit) {
+                this.value = maxLimit.toFixed(0);
+            } else {
+                this.value = newValue.toFixed(decimalCount);
+            }
+        } else {
+            if (currentValue > 0) {
+                let newValue = currentValue - step;
+                if (newValue <= 0) {
+                    this.value = '';
+                } else {
+                    this.value = newValue.toFixed(decimalCount);
+                }
+            }
+        }
+    });
+
+    elements.time.addEventListener('keydown', function (event) {
+        let step = 1;
+        let currentValue = parseFloat(this.value) || 0;
+
+        function getDecimalCount(value) {
+            if (Math.floor(value) === value) return 0;
+            return value.toString().split(".")[1]?.length || 0;
+        }
+
+        let decimalCount = getDecimalCount(currentValue);
+        let maxLimit = 999999;
+
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            let newValue = currentValue + step;
+            if (newValue > maxLimit) {
+                this.value = maxLimit.toFixed(0);
+            } else {
+                this.value = newValue.toFixed(decimalCount);
+            }
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            if (currentValue > 0) {
+                let newValue = currentValue - step;
+                if (newValue <= 0) {
+                    this.value = '';
+                } else {
+                    this.value = newValue.toFixed(decimalCount);
+                }
+            }
         }
     });
 
@@ -448,8 +665,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     elements.refreshButton.addEventListener('click', handleListRefresh);
+
     elements.closeButton.addEventListener('click', handleClose);
+
     elements.startButton.addEventListener('click', handleStartClick);
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'F1') {
+            event.preventDefault();
+            handleStartClick();
+        }
+    });
+
+    elements.locationButton.addEventListener('click', async () => {
+        if (!elements.locationButton.classList.contains('active')) {
+            if (!elements.locationButton.classList.contains('stand')) {
+                elements.locationButton.classList.add('stand');
+                elements.locationButton.title = `Waiting for your\nlocation pick...`;
+                await trackCursor();
+                [px, py] = location.split(',').map(Number);
+                if (!status) {
+                    [tx, ty] = [px, py];
+                }
+                elements.locationButton.title = `Picked location\nX : ${px}, Y : ${py}`;
+                elements.locationButton.classList.remove('stand');
+                elements.locationButton.classList.add('active');
+            }
+        } else {
+            location = '';
+            [px, py] = [0, 0];
+            elements.locationButton.classList.remove('active');
+            elements.locationButton.title = "Select to pick a specific location for some activation\nmodes. Deselect to use the center of the window";
+        }
+        if (status) {
+            if ((pick) && (pick === elements.locationButton.classList.contains('active')) && !(px === tx && py === ty)) {
+                handleChange(elements.locationButton, !pick);
+            } else {
+                handleChange(elements.locationButton, pick);
+            }
+        }
+    });
+
+    elements.clicks.addEventListener('click', () => {
+        index = (index + 1) % values.length;
+        elements.clicks.value = values[index];
+        if (status) {
+            handleChange(elements.clicks, click);
+        }
+    });
+
+    elements.clicks.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+    });
 
     window.electronAPI.on('error-message', handleError);
 
