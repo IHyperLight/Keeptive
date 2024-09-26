@@ -1,4 +1,4 @@
-#🟢 Keeptive - Automated Window Interaction Tool
+# 🟢 Keeptive - Automated Window Interaction Tool
 
 📌 Keeptive is a Python-based Windows automation tool designed to interact with the windows on your system by simulating user actions such as clicks and mouse movements to keep them active. 
 
@@ -8,7 +8,7 @@
 
 ![Keeptive UI](https://drive.google.com/uc?export=view&id=1tiZbpRRwd0IjGuKZDPAsWFSDCxQQ0Mts)
 
-##✨ Features
+## ✨ Features
 
 - **⚡ Four Automated Activation Modes for Different Situations: Clicking, Movement, Passive, and Key**: Simulates four types of interaction with target windows or the entire system, as appropriate.
 
