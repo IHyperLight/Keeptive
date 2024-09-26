@@ -8,11 +8,11 @@
 
 ![Keeptive UI](https://drive.google.com/uc?export=view&id=1tiZbpRRwd0IjGuKZDPAsWFSDCxQQ0Mts)
 
-## ✨ Features
+## 🩷 Features
 
 - **⚡ Four Automated Activation Modes for Different Situations: Clicking, Movement, Passive, and Key**: Simulates four types of interaction with target windows or the entire system, as appropriate.
 
-- **🚥 Window State Management**: Handles minimized windows, restores them for interaction, and then re-minimizes them without disrupting the user experience.
+- **🚥 Window State Management**: Handles minimized windows, restores them for interaction, and then positions them discreetly in the background without disrupting the user experience.
 
 - **⏸️ Focus-Aware Clicking**: Optional pause functionality to avoid interaction when the target window is already in the foreground.
 
