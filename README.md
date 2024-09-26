@@ -4,7 +4,7 @@
 
 📌 The script can handle one or multiple windows simultaneously, manage their states (minimized or restored) to ensure they receive the interaction, and even keep your PC awake for as long as you choose. 
 
-📌 It also offers options to pause based on window focus, define the interval between interactions, and run for a set duration or indefinitely.
+📌 It also offers options to pause based on window focus, select the on-screen location for some activation modes, define the interval between interactions, and run for a set duration or indefinitely.
 
 ![Keeptive UI](https://drive.google.com/uc?export=view&id=1tiZbpRRwd0IjGuKZDPAsWFSDCxQQ0Mts)
 
