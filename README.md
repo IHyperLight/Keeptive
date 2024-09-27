@@ -12,7 +12,7 @@
 
 - **⚡ Four Automated Activation Modes for Different Situations: Clicking, Movement, Passive, and Key**: Simulates four types of interaction with target windows or the entire system, as appropriate.
 
-- **🚥 Window State Management**: Handles minimized windows, restores them for interaction, and then positions them discreetly in the background without disrupting the user experience.
+- **🚥 Window State Management**: Handles minimized windows discreetly, restores them for interaction, and then positions them in the background without disrupting the user experience.
 
 - **⏸️ Focus-Aware Activation**: Optional pause functionality to avoid interaction when the target window is already in the foreground.
 
