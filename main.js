@@ -17,6 +17,7 @@ function createWindow() {
         height: 679,
         minWidth: 928,
         minHeight: 679,
+        show: false,
         icon: path.join(__dirname, 'src/assets/icon.ico'),
         webPreferences: {
             preload: path.join(__dirname, 'src/preload.js'),
@@ -27,9 +28,10 @@ function createWindow() {
 
     mainWindow.setMenu(null);
 
-    mainWindow.loadURL('file://' + path.join(__dirname, 'src/index.html'));
+    mainWindow.loadFile('src/index.html');
 
     mainWindow.once('ready-to-show', () => {
+        mainWindow.center();
         mainWindow.show();
     });
 

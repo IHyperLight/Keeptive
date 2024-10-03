@@ -37,11 +37,11 @@ activation mode by mouse clicks"><img src="assets/click.svg"></button>
 to press in mouse clicks mode">
                         <button id="move-mode" class="mode-button" title="Select to use the discrete activation
 mode by mouse movement"><img src="assets/move.svg"></button>
-                        <button id="passive-mode" class="mode-button" title="Select to use the discrete
-passive activation mode"><img src="assets/passive.svg"></button>
+                        <button id="passive-mode" class="mode-button" title="Select to use the discrete passive activation mode. This mode sends
+an activation instruction to the window instead of a user interaction"><img src="assets/passive.svg"></button>
                     </div>
                     <div class="row-part">
-                        <button id="key-mode" class="mode-button" title="Select to use the discrete
+                        <button id="key-mode" class="mode-button" title="Select to use the
 activation mode by key press"><img src="assets/key.svg"></button>
                         <input disabled="true" pattern="[^\s]*" type="text" id="letter" maxlength="12" placeholder="Key"
                             title="Enter the key or the valid key name
@@ -59,10 +59,10 @@ only when the window is in the foreground"><img src="assets/pause.svg"></button>
 modes. Deselect to use the center of the window">
                         <img src="assets/location.svg" alt="Location">
                     </button>
-                    <input type="number" id="interval" placeholder="Secs" value="60" step="any" title="Enter a value in seconds for the time interval
-between each action of the selected activation mode">
-                    <input type="number" id="time" placeholder="♾️Mins" step="any" title="Enter a value in minutes for the duration you want to run the
-activation. Leave the field empty to run the activation indefinitely">
+                    <input type="number" id="interval" placeholder="Secs" value="60" step="any" title="Use the mouse wheel or enter a value in seconds for the time
+interval between each action of the selected activation mode">
+                    <input type="number" id="time" placeholder="♾️Mins" step="any" title="Use the mouse wheel or enter a value in minutes for the duration you want
+to run the activation. Leave the field empty to run the activation indefinitely">
                 </div>
             </div>
             <div class="form-group">
