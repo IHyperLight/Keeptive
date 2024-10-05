@@ -6,7 +6,7 @@
 
 📌 It also offers options to pause based on window focus, select the on-screen location for some activation modes, define the interval between interactions, and run for a set duration or indefinitely.
 
-![Keeptive UI](https://github.com/user-attachments/assets/6b6b60bf-e27b-4ff6-bb05-18705110b980)
+![Keeptive UI](https://github.com/user-attachments/assets/386f89c1-a7a8-4842-bd06-1c6fa95d1631)
 
 ## 🩷 Features
 
