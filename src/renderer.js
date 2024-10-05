@@ -280,11 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                if (mode === 'passive' && interval < 5) {
-                    displayErrorMessage('Enter a higher interval value to avoid potential issues with the passive activation');
-                    return;
-                }
-
                 if (mode === 'key' && !w) {
                     displayErrorMessage('Select the entire system option to use the key mode');
                     return;

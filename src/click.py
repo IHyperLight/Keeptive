@@ -10,23 +10,35 @@ import sys
 def clicks(mode, pause, interval, timed, location, click, window_strings):
     # Función para obtener las coordenadas exactas donde hacer click o hacia donde mover el mouse
     def get_location(hwnd):
-        # Obtener el rectángulo de la ventana
-        window_rect = win32gui.GetWindowRect(hwnd)
+        # Obtener el rectángulo de la ventana (cliente, es decir, solo el contenido, sin la barra de título)
+        client_rect = win32gui.GetClientRect(hwnd)
 
         # Verificar si se eligieron coordenadas específicas para las acciones de click o movimiento
         if location == "":
-            x = (window_rect[0] + window_rect[2]) // 2
-            y = (window_rect[1] + window_rect[3]) // 2
+            x = (client_rect[0] + client_rect[2]) // 2
+            y = (client_rect[1] + client_rect[3]) // 2
         else:
-            ax, ay = map(int, location.split(","))
-            left, top, right, bottom = window_rect
+            client_top_left = win32gui.ClientToScreen(hwnd, (0, 0))
 
-            if ax < left or ax > right or ay < top or ay > bottom:
+            # Coordenadas absolutas
+            absolute_left = client_top_left[0]
+            absolute_top = client_top_left[1]
+            absolute_right = absolute_left + (client_rect[2] - client_rect[0])
+            absolute_bottom = absolute_top + (client_rect[3] - client_rect[1])
+
+            ax, ay = map(int, location.split(","))
+
+            if (
+                ax < absolute_left
+                or ax > absolute_right
+                or ay < absolute_top
+                or ay > absolute_bottom
+            ):
                 print(f"Picked location outside the window margins", file=sys.stderr)
                 sys.exit(6)
             else:
-                x = ax - left
-                y = ay - top
+                x = ax - absolute_left
+                y = ay - absolute_top
         return x, y
 
     # Función para obtener los minutos si es que se especificó tiempo y generar una época
@@ -104,12 +116,16 @@ def clicks(mode, pause, interval, timed, location, click, window_strings):
                 win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
             # Evaluar modo
             if mode == "move":
+                # Enviar una instrucción de activación a la ventana para asegurar la correcta interacción
+                win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0)
                 # Obtener ubicación según la elección del usuario
                 x, y = get_location(hwnd)
                 # Enviar un movimiento de mouse
                 lParam = y << 16 | x
                 win32api.SendMessage(hwnd, win32con.WM_MOUSEMOVE, 0, lParam)
             elif mode == "click":
+                # Enviar una instrucción de activación a la ventana para asegurar la correcta interacción
+                win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0)
                 # Obtener ubicación según la elección del usuario
                 x, y = get_location(hwnd)
                 # Enviar un clic en el centro de la ventana
