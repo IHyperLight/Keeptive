@@ -20,6 +20,6 @@
 
 - **⌚ Customizable Timed Execution**: Run your activation or interaction task for a specified duration or continuously until manually stopped.
 ---
-❗ *Due to the way Universal Windows Platform (UWP) applications handle and manage received events, certain activation modes and interactions aimed specifically at UWP windows may not function correctly. Similarly, there may be specific cases of suboptimal performance in other applications that, due to their nature or state, handle activation events in unique ways.*
+❗ *Due to the way Universal Windows Platform (UWP) applications handle and manage received events, certain activation modes and interactions aimed specifically at UWP windows may not function correctly. Similarly, there may be specific cases of suboptimal performance in other applications that, due to their nature or state, handle activation events in unique ways. Additionally, if you notice incorrect behavior in applications running in exclusive fullscreen mode, switching to borderless windowed mode should fix the issue*
 
 ❗ *Keeptive aims to operate discreetly, enabling users to continue their tasks while it works in the background. Some similar programs, like auto-clickers, can change how the operating system manages windows. If you find Keeptive bringing windows to the foreground or disrupting your activities, restarting your PC should restore normal window management, which may have been altered by another application. This will allow Keeptive to function quietly again*
