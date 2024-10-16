@@ -1,4 +1,4 @@
-# 🟢 Keeptive - Discreet Window Interaction Tool
+# Keeptive - Discreet Window Interaction Tool
 
 📌 Keeptive is a Python-based Windows automation tool designed to interact with the windows on your system by simulating user actions such as clicks and mouse movements discreetly and without interrupting your activity. 
 
@@ -26,7 +26,7 @@
 
 - **1.** Download the [latest release here](https://github.com/IHyperLight/Keeptive/releases/tag/v1.0.0).
 
-- **2.** Unzip, open the folder and run the executable file (Keeptive.exe).
+- **2.** Unzip, open the folder and run the executable (Keeptive.exe).
 
 - **3.** Keep your windows active!
 
