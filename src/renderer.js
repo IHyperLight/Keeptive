@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let index = 0;
     const values = ["L-click", "R-click", "M-click"];
     let click;
+    let tooltipTimeout;
+    let tooltipDiv = document.createElement('div');
+    tooltipDiv.className = 'tooltip';
+    document.body.appendChild(tooltipDiv);
 
     const elements = {
         errorMessage: document.getElementById('error-message'),
@@ -52,6 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
         locationButton: document.getElementById('location-button'),
         windowsLabel: document.getElementById('windows-label'),
         clicks: document.getElementById('click'),
+        tooltipElements: document.querySelectorAll('[data-tooltip]'),
+        externalButton: document.getElementById('external-button'),
+    };
+
+    elements.externalButton.onclick = function () {
+        window.location.href = "https://github.com/IHyperLight/Keeptive#%EF%B8%8F-valid-keys-for-key-press-mode";
     };
 
     const updateButtonState = (status) => {
@@ -67,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             circle: 'linear-gradient(120deg, #00FF0A, #00FFC2)',
             notice: 'linear-gradient(90deg, #00FF0A, #00FF0A, #00FFC2)',
             noticeText: 'Active',
-            toolTip: 'Press F6 or click to stop the\ncurrent activation process'
+            toolTip: 'Press F6 or click to stop'
         } : {
             buttonText: `<path
                             d="M383.592 226.744c21.877-11.119 21.877-42.37 0-53.488L43.592.453A32 32 0 0 0 42.664 0H17.33C7.358 4.67 0 14.706 0 27.197v345.606C0 385.294 7.358 395.331 17.33 400h25.333q.465-.217.93-.453z"
@@ -82,10 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
             circle: 'linear-gradient(120deg, #FF0000, #FF9900)',
             notice: 'linear-gradient(90deg, #FF0000, #FF0000, #FF9900)',
             noticeText: 'Inactive',
-            toolTip: 'Press F6 or click to start the discrete activation with the\nchosen parameters in the selected activatable mode'
+            toolTip: 'Press F6 or click to start'
         };
 
-        elements.startButton.title = activeStyle.toolTip;
+        elements.startButton.setAttribute('data-tooltip', activeStyle.toolTip);
         elements.startSvg.innerHTML = activeStyle.buttonText;
         elements.startBack.style.background = activeStyle.startBack;
         elements.circle.style.background = activeStyle.circle;
@@ -93,6 +103,50 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.notice.style.backgroundClip = 'text';
         elements.notice.textContent = activeStyle.noticeText;
     };
+
+    elements.tooltipElements.forEach(element => {
+        const showTooltip = () => {
+            clearTimeout(tooltipTimeout);
+            tooltipTimeout = setTimeout(() => {
+                if (tooltipDiv.style.visibility === 'visible') return;
+
+                const tooltipText = element.getAttribute('data-tooltip');
+                tooltipDiv.innerHTML = '';
+
+                tooltipText.split('\\n').forEach(line => {
+                    const lineDiv = document.createElement('div');
+                    lineDiv.textContent = line;
+                    tooltipDiv.appendChild(lineDiv);
+                });
+
+                const rect = element.getBoundingClientRect();
+                tooltipDiv.style.top = `${rect.bottom + 10}px`;
+                tooltipDiv.style.left = `${rect.left + (element.offsetWidth / 2) - (tooltipDiv.offsetWidth / 2)}px`;
+
+                tooltipDiv.style.visibility = 'visible';
+                tooltipDiv.style.opacity = '1';
+            }, 1000);
+        };
+
+        const hideTooltip = () => {
+            clearTimeout(tooltipTimeout);
+            tooltipDiv.style.visibility = 'hidden';
+            tooltipDiv.style.opacity = '0';
+        };
+
+        const resetTooltip = () => {
+            showTooltip();
+            element.removeEventListener('mousemove', resetTooltip);
+        };
+
+        element.addEventListener('mouseenter', showTooltip);
+        element.addEventListener('mouseleave', hideTooltip);
+        element.addEventListener('wheel', hideTooltip);
+        element.addEventListener('click', () => {
+            hideTooltip();
+            element.addEventListener('mousemove', resetTooltip);
+        });
+    });
 
     const resetChangeFade = () => {
         flag = false;
@@ -280,11 +334,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                if (mode === 'key' && !w) {
-                    displayErrorMessage('Select the entire system option to use the key mode');
-                    return;
-                }
-
                 if (mode === 'key' && !key) {
                     displayErrorMessage('Enter a key to use the key mode');
                     return;
@@ -358,12 +407,12 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let mutation of mutationsList) {
             if (mutation.attributeName === 'class') {
                 if (elements.keyModeButton.classList.contains('active')) {
-                    elements.searchButton.disabled = true;
                     elements.letter.disabled = false;
+                    elements.externalButton.disabled = false;
                     elements.locationButton.disabled = true;
                 } else {
-                    elements.searchButton.disabled = false;
                     elements.letter.disabled = true;
+                    elements.externalButton.disabled = true;
                     if (!elements.locationButton.classList.contains('active')) {
                         elements.locationButton.disabled = false;
                     }

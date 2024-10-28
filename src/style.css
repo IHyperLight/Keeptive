@@ -13,6 +13,7 @@ body {
     align-items: center;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 *,
@@ -52,7 +53,7 @@ body {
 #start-back {
     background: linear-gradient(120deg, #00FF0A, #00FFC2);
     border-radius: 13px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: center;
     margin: 0.1rem 0 1rem;
@@ -98,7 +99,7 @@ input {
     background-color: #363636;
     border: none;
     border-radius: 8px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     color: #a0a0a0;
     cursor: pointer;
     font-family: 'Poppins', sans-serif !important;
@@ -145,7 +146,7 @@ input[type="number"]::-webkit-outer-spin-button {
     background-color: #2d2d2d;
     border: none;
     border-radius: 13px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     color: #a0a0a0;
     cursor: pointer;
     font-family: 'Poppins', sans-serif !important;
@@ -225,7 +226,7 @@ input[type="number"]::-webkit-outer-spin-button {
     background-color: #2d2d2d;
     border: none;
     border-radius: 13px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     height: 4rem;
     padding: 0.625rem;
@@ -270,7 +271,7 @@ input[type="number"]::-webkit-outer-spin-button {
     background-color: #2d2d2d;
     border: none;
     border-radius: 13px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     height: 4rem;
     margin-bottom: 0.75rem;
@@ -393,6 +394,13 @@ hr {
     }
 }
 
+.column-part {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .row-part,
 #one {
     align-items: center;
@@ -455,7 +463,7 @@ hr {
     background-color: #363636;
     border: none;
     border-radius: 13px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     height: 4rem;
     padding: 0.625rem;
@@ -506,7 +514,7 @@ hr {
 #circle {
     background: linear-gradient(120deg, #FF0000, #FF9900);
     border-radius: 50%;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
     height: 1.3rem;
     margin-right: 0.5rem;
     min-width: 1.3rem;
@@ -575,4 +583,46 @@ input:focus,
 
 img {
     -webkit-user-drag: none;
+}
+
+#external-button {
+    margin-top: 1rem;
+    margin-left: 2.75rem;
+    background-color: transparent;
+    height: 1rem;
+    width: 1rem;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+#external-button img {
+    height: 1rem;
+    width: 1rem;
+}
+
+input,
+button {
+    position: relative !important;
+}
+
+.tooltip {
+    color: #808080;
+    position: absolute;
+    background-color: #202020;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.7);
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+    padding: 0.4rem;
+    border-radius: 13px;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: lighter;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    z-index: 1000;
+    width: 12rem;
+    max-width: 12rem;
+    text-align: center;
 }

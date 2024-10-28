@@ -30,22 +30,31 @@
                 <label for="mode">Activation Modes</label>
                 <div id="mode">
                     <div class="row-part" id="row-top">
-                        <button id="click-mode" class="mode-button active" title="Select to use the discrete
-activation mode by mouse clicks"><img src="assets/click.svg"></button>
+                        <button id="click-mode" class="mode-button active"
+                            data-tooltip="Select to use the discrete activation mode by mouse clicks"><img
+                                src="assets/click.svg"></button>
                         <input pattern="[^\s]*" type="text" class="no-select" id="click" maxlength="12" value="L-click"
-                            readonly title="Click to change the mouse button
-to press in mouse clicks mode">
-                        <button id="move-mode" class="mode-button" title="Select to use the discrete activation
-mode by mouse movement"><img src="assets/move.svg"></button>
-                        <button id="passive-mode" class="mode-button" title="Select to use the discrete passive activation mode. This mode sends
-an activation instruction to the window instead of a user interaction"><img src="assets/passive.svg"></button>
+                            readonly
+                            data-tooltip="Click to change the mouse button to press in mouse clicks mode.\nL : left, R : right, M : middle">
+                        <button id="move-mode" class="mode-button"
+                            data-tooltip="Select to use the discrete activation mode by mouse movement"><img
+                                src="assets/move.svg"></button>
+                        <button id="passive-mode" class="mode-button"
+                            data-tooltip="Select to use the discrete passive activation mode.\nThis mode sends an activation instruction to the window instead of a user interaction.\nIt can be useful for games or apps that suspend their image update during alt-tab">
+                            <img src="assets/passive.svg"></button>
                     </div>
                     <div class="row-part">
-                        <button id="key-mode" class="mode-button" title="Select to use the
-activation mode by key press"><img src="assets/key.svg"></button>
-                        <input disabled="true" pattern="[^\s]*" type="text" id="letter" maxlength="12" placeholder="Key"
-                            title="Enter the key or the valid key name
-to press in key press mode">
+                        <button id="key-mode" class="mode-button"
+                            data-tooltip="Select to use the discrete activation mode by key press"><img
+                                src="assets/key.svg"></button>
+                        <div id="column-part">
+                            <input disabled="true" pattern="[^\s]*" type="text" id="letter" maxlength="12"
+                                placeholder="Key" spellcheck="false"
+                                data-tooltip="Enter the key or the valid key name to press in key press mode">
+                            <button disabled="true" id="external-button"
+                                data-tooltip="Click to see all valid key names in your navigator"><img
+                                    src="assets/external.svg"></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -53,16 +62,17 @@ to press in key press mode">
                 <label
                     for="one">Auto&emsp;&emsp;&emsp;&nbsp;Pick&emsp;&emsp;&emsp;&ensp;Interval&emsp;&ensp;&nbsp;Time</label>
                 <div id="one">
-                    <button id="pause-mode" class="pause-button active" title="Select to automatically pause activation
-only when the window is in the foreground"><img src="assets/pause.svg"></button>
-                    <button id="location-button" title="Select to pick a specific location for some activation
-modes. Deselect to use the center of the window">
+                    <button id="pause-mode" class="pause-button active"
+                        data-tooltip="Select to automatically pause activation only when the window is in the foreground"><img
+                            src="assets/pause.svg"></button>
+                    <button id="location-button"
+                        data-tooltip="Select to pick a specific location for mouse clicks mode and mouse movement mode.\nDeselect to use the default location : the center of the window, or the current cursor position only if the entire system mode is selected">
                         <img src="assets/location.svg" alt="Location">
                     </button>
-                    <input type="number" id="interval" placeholder="Secs" value="60" step="any" title="Use the mouse wheel or enter a value in seconds for the time
-interval between each action of the selected activation mode">
-                    <input type="number" id="time" placeholder="♾️Mins" step="any" title="Use the mouse wheel or enter a value in minutes for the duration you want
-to run the activation. Leave the field empty to run the activation indefinitely">
+                    <input type="number" id="interval" placeholder="Secs" value="60" step="any"
+                        data-tooltip="Use the mouse wheel or enter a value in seconds for the time interval between each action of the selected activation mode">
+                    <input type="number" id="time" placeholder="♾️Mins" step="any"
+                        data-tooltip="Use the mouse wheel or enter a value in minutes for the duration you want to run the activation.\nLeave the field empty to run the activation indefinitely">
                 </div>
             </div>
             <div class="form-group">
@@ -75,9 +85,8 @@ to run the activation. Leave the field empty to run the activation indefinitely"
                 </div>
             </div>
             <div id="start-back">
-                <button id="start" title="Press F6 or click to start the discrete activation with the
-chosen parameters in the selected activatable mode"><svg id="start-svg" width="400" height="400" viewBox="0 0 400 400"
-                        xmlns="http://www.w3.org/2000/svg">
+                <button id="start" data-tooltip="Press F6 or click to start"><svg id="start-svg" width="400"
+                        height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M383.592 226.744c21.877-11.119 21.877-42.37 0-53.488L43.592.453A32 32 0 0 0 42.664 0H17.33C7.358 4.67 0 14.706 0 27.197v345.606C0 385.294 7.358 395.331 17.33 400h25.333q.465-.217.93-.453z"
                             fill="url(#a)" />
@@ -103,12 +112,12 @@ chosen parameters in the selected activatable mode"><svg id="start-svg" width="4
                 <p>❔&nbsp;Hover over any button or input field for more info</p>
                 <label id="search-label" for="row-part">Activatable Modes</label>
                 <div class="row-part">
-                    <button id="search-button" title="Click to search for all open windows to select the ones you
-want to keep active with your preferred activation mode">
+                    <button id="search-button"
+                        data-tooltip="Click to search for all open windows to select the ones you want to keep active with your preferred activation mode">
                         <img src="assets/search.svg" alt="Search">
                     </button>
-                    <button id="w-button" title="Select to keep the entire system active
-with your preferred activation mode">
+                    <button id="w-button"
+                        data-tooltip="Select to keep the entire system awake with your preferred activation mode">
                         <svg width="400" height="400" viewBox="0 0 433 433" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -127,12 +136,10 @@ with your preferred activation mode">
             </div>
             <div id="top-section">
                 <label id="top-label" for="top-section">Reload&emsp;&emsp;Back</label>
-                <button id="refresh-button" title="Click to re-search
-all open windows">
+                <button id="refresh-button" data-tooltip="Click to re-search all open windows">
                     <img src="assets/reload.svg" alt="Reload">
                 </button>
-                <button id="close-button" title="Click to go back to
-the previous screen">
+                <button id="close-button" data-tooltip="Click to go back to the previous screen">
                     <img src="assets/close.svg" alt="Close">
                 </button>
                 <hr>
