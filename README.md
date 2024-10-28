@@ -8,7 +8,11 @@
 
 - 📌 It also offers options to pause based on a window focus, select the on-screen location for some activation modes, define the interval between interactions, and run for a set duration or indefinitely.
 
-![Keeptive UI](https://github.com/user-attachments/assets/386f89c1-a7a8-4842-bd06-1c6fa95d1631)
+---
+
+![Keeptive UI](https://github.com/user-attachments/assets/bd8b0919-c011-4001-8bff-9c92f000c1cc)
+
+---
 
 ## 🩷 Features
 
@@ -26,11 +30,11 @@
 
 ## ▶️ Getting Started
 
-- **1.** Download the [latest release here](https://github.com/IHyperLight/Keeptive/releases/tag/v1.0.1).
+- **1.** Download the [latest release here](https://github.com/IHyperLight/Keeptive/releases/tag/v1.1.0).
 
 - **2.** Unzip, open the folder and run the executable (Keeptive.exe).
 
-- **3.** Keep your windows active discreetly! =)
+- **3.** Keep your windows discreetly active =)
 
 ---
 
@@ -86,7 +90,7 @@
 
 ## 💕 For you
 
-- I sincerely hope that my tool proves useful to you in one way or another. Feel free to share any feedback to help improve Keeptive. Thank you! =)
+- I sincerely hope that my tool proves useful to you in one way or another. Feel free to share any feedback to help improve Keeptive. Thank you =)
 
 ---
 
@@ -97,7 +101,6 @@
 | `\t`          | Tab                             |
 | `\n`          | Line Feed (LF)                  |
 | `\r`          | Carriage Return (Enter)         |
-| ` `           | Space                           |
 | `!`           | Shift + 1                       |
 | `"`           | Shift + '                       |
 | `#`           | Shift + 3                       |
