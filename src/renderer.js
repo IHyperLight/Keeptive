@@ -324,18 +324,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                if ((mode === 'click' && selectedWindows.length === 0 && !w) || (mode === 'move' && selectedWindows.length === 0 && !w)) {
+                if (mode === 'key' && !key) {
+                    displayErrorMessage('Enter a key to use the key mode');
+                    return;
+                }
+
+                if ((mode === 'click' && selectedWindows.length === 0 && !w) || (mode === 'move' && selectedWindows.length === 0 && !w) || (mode === 'key' && selectedWindows.length === 0 && !w)) {
                     displayErrorMessage('Select at least one window or the entire system option');
                     return;
                 }
 
                 if (mode === 'passive' && selectedWindows.length === 0) {
                     displayErrorMessage('Select at least one window to use the passive mode');
-                    return;
-                }
-
-                if (mode === 'key' && !key) {
-                    displayErrorMessage('Enter a key to use the key mode');
                     return;
                 }
 
