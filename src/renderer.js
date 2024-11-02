@@ -725,13 +725,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!elements.locationButton.classList.contains('active')) {
             if (!elements.locationButton.classList.contains('stand')) {
                 elements.locationButton.classList.add('stand');
-                elements.locationButton.title = `Waiting for your\nlocation pick...`;
+                elements.locationButton.setAttribute("data-tooltip", `Waiting for your location pick . . .`)
                 await trackCursor();
                 [px, py] = location.split(',').map(Number);
                 if (!status) {
                     [tx, ty] = [px, py];
                 }
-                elements.locationButton.title = `Picked location\nX : ${px}, Y : ${py}`;
+                elements.locationButton.setAttribute("data-tooltip", `Picked location\\nX : ${px}, Y : ${py}`)
                 elements.locationButton.classList.remove('stand');
                 elements.locationButton.classList.add('active');
             }
@@ -739,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
             location = '';
             [px, py] = [0, 0];
             elements.locationButton.classList.remove('active');
-            elements.locationButton.title = "Select to pick a specific location for some activation\nmodes. Deselect to use the center of the window";
+            elements.locationButton.setAttribute("data-tooltip", `Select to pick a specific location for mouse clicks mode and mouse movement mode.\\nDeselect to use the default location : the center of the window, or the current cursor position only if the entire system mode is selected`)
         }
         if (status) {
             if ((pick) && (pick === elements.locationButton.classList.contains('active')) && !(px === tx && py === ty)) {
