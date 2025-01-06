@@ -8,8 +8,6 @@
 
 - 📌 It also offers options to pause based on a window focus, select the on-screen location for some activation modes, define the interval between interactions, and run for a set duration or indefinitely.
 
----
-
 ![Keeptive UI](https://github.com/user-attachments/assets/bd8b0919-c011-4001-8bff-9c92f000c1cc)
 
 ---
@@ -77,6 +75,15 @@
     npm run build
     ```
   The output will be located in the dist folder.
+
+---
+
+## ✔️ How To Use
+
+![Keeptive 1](https://github.com/user-attachments/assets/a997986e-dd8e-41fc-baf6-b7f20446f4da)
+![Keeptive 2](https://github.com/user-attachments/assets/c397d2a4-6ec4-43cb-899c-b0d3b4f7eff7)
+![Keeptive 3](https://github.com/user-attachments/assets/103c39d8-6815-4132-8cbf-be6a0254a90b)
+![Keeptive 4](https://github.com/user-attachments/assets/fe3b9b12-17ff-45bc-ac55-23d9fda596f5)
 
 ---
 
