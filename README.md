@@ -1,10 +1,12 @@
-# 🟢 Keeptive - Auto Clicker & Discreet Window Interaction Tool
+# Keeptive - Auto Clicker & Discreet Window Interaction Tool
 
 <div align="center">
 
 [![Download Keeptive v1.2.0](https://img.shields.io/badge/Download-Keeptive%20v1.2.0-7C4DFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.0)
 
 </div>
+
+![Keeptive UI](https://github.com/user-attachments/assets/9b9eab2f-a9d6-4075-9105-9335a6429721)
 
 ## ✅ Overview
 
@@ -13,8 +15,6 @@
 -   📌 The application can handle multiple windows simultaneously, manage their states (minimized or restored) to ensure proper interaction, and offers system-wide activation to keep your entire PC awake for as long as needed.
 
 -   📌 Advanced features include customizable toggle shortcuts for instant start/stop control, system tray integration for background operation, auto-pause when windows are in foreground, precise location picking for click/movement actions, configurable intervals and durations, and the ability to combine multiple activation modes simultaneously for maximum flexibility.
-
-![Keeptive UI](https://github.com/user-attachments/assets/9b9eab2f-a9d6-4075-9105-9335a6429721)
 
 ---
 
