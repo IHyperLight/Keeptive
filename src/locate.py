@@ -28,6 +28,8 @@ def adjust_coordinates(x, y, screen_width, screen_height):
 class FollowCursorApp:
     def __init__(self, root):
         self.root = root
+        self.is_cleaning = False  # Flag para evitar limpieza múltiple
+
         # Configurar la ventana para que no tenga bordes y siempre esté en primer plano
         self.root.overrideredirect(True)
         self.root.attributes("-topmost", True)
@@ -82,40 +84,62 @@ class FollowCursorApp:
         self.root.geometry(f"+{x+10}+{y+10}")
 
     def on_click(self, x, y, button, pressed):
-        if pressed:
+        if pressed and not self.is_cleaning:
+            # CRÍTICO: Setear flag ANTES de imprimir para evitar múltiples impresiones
+            self.is_cleaning = True
             # Imprimir la posición del clic y cerrar la aplicación
             x, y = adjust_coordinates(x, y, self.screen_width, self.screen_height)
             self.click_position = (x, y)
-            print(f"{x},{y}")
+            print(f"{x},{y}", flush=True)
             self.clean_up()
-            self.root.destroy()
+            # Programar destrucción del root para después del evento
+            self.root.after(10, self.root.destroy)
 
     def on_key_press(self, key):
-        if key == keyboard.Key.esc:
+        if key == keyboard.Key.esc and not self.is_cleaning:
+            # CRÍTICO: Setear flag ANTES de imprimir para evitar múltiples impresiones
+            self.is_cleaning = True
             # Imprimir la posición del cursor y cerrar la aplicación cuando se presiona Esc
             x, y = pyautogui.position()
             x, y = adjust_coordinates(x, y, self.screen_width, self.screen_height)
-            print(f"{x},{y}")
+            print(f"{x},{y}", flush=True)
             self.clean_up()
-            self.root.destroy()
+            # Programar destrucción del root para después del evento
+            self.root.after(10, self.root.destroy)
 
     def on_closing(self):
         # Manejar el cierre de la ventana para asegurarse de que se realice la limpieza
-        self.clean_up()
-        self.root.destroy()
+        if not self.is_cleaning:
+            self.clean_up()
+            self.root.destroy()
 
     def clean_up(self):
+        # CRÍTICO: Evitar limpieza múltiple
+        if self.is_cleaning:
+            return
+        self.is_cleaning = True
+
         # Detener los listeners y cerrar la aplicación de manera limpia
-        if hasattr(self, "mouse_listener"):
-            self.mouse_listener.stop()
-        if hasattr(self, "keyboard_listener"):
-            self.keyboard_listener.stop()
-        if hasattr(self, "root"):
-            self.root.quit()
+        if hasattr(self, "mouse_listener") and self.mouse_listener:
+            try:
+                self.mouse_listener.stop()
+            except Exception:
+                pass
+        if hasattr(self, "keyboard_listener") and self.keyboard_listener:
+            try:
+                self.keyboard_listener.stop()
+            except Exception:
+                pass
+        if hasattr(self, "root") and self.root:
+            try:
+                self.root.quit()
+            except Exception:
+                pass
 
     def signal_handler(self, sig, frame):
         # Manejar señales para realizar la limpieza antes de finalizar el script
         self.clean_up()
+        sys.exit(0)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,8 @@
+python314.zip
+.
+Lib
+DLLs
+tcl
+
+# Uncomment to run site.main() automatically
+import site

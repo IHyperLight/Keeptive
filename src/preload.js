@@ -1,74 +1,84 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('electronAPI', {
+contextBridge.exposeInMainWorld("electronAPI", {
+    // CORREGIDO: Retornar promesa en lugar de manipular DOM directamente
+    // La manipulación del DOM debe hacerse en renderer.js
     getListOfWindows: () => {
-        ipcRenderer.invoke('get-window-list')
-            .then(windows => {
-                const windowList = document.getElementById('window-list');
-                windowList.innerHTML = '';
-                const validWindows = windows.filter(window => window);
-
-                if (validWindows.length === 0) {
-                    document.getElementById('loading-section').style.display = 'none';
-                    document.getElementById('top-section').style.display = 'block';
-                    document.getElementById('empty-section').style.display = 'flex';
-                } else {
-                    document.getElementById('windows-label').style.display = 'block';
-                    validWindows.forEach(window => {
-                        const button = document.createElement('button');
-                        button.textContent = window;
-                        button.addEventListener('click', () => {
-                            button.classList.toggle('selected');
-                        });
-                        windowList.appendChild(button);
-                    });
-                    document.getElementById('empty-section').style.display = 'none';
-                    document.getElementById('loading-section').style.display = 'none';
-                    document.getElementById('top-section').style.display = 'block';
-                    document.getElementById('scroll-zone').style.overflowY = 'auto';
-                }
-                document.getElementById('close-button').disabled = false;
-                document.getElementById('refresh-button').disabled = false;
-            })
-            .catch(error => {
-            });
+        return ipcRenderer.invoke("get-window-list");
     },
     startClicking: (command) => {
-        return ipcRenderer.invoke('start', command)
-            .then(response => {
+        return ipcRenderer
+            .invoke("start", command)
+            .then((response) => {
                 return response;
             })
-            .catch(error => {
+            .catch((error) => {
+                console.error("Error starting click process:", error);
+                throw error;
             });
     },
     getLocation: (command) => {
-        return ipcRenderer.invoke('get-location', command)
-            .then(response => {
+        return ipcRenderer
+            .invoke("get-location", command)
+            .then((response) => {
                 return response;
             })
-            .catch(error => {
+            .catch((error) => {
+                console.error("Error getting location:", error);
+                return "";
             });
     },
-    activateKey: (callback) => ipcRenderer.on('activate-key', callback),
-    minimizeWindow: () => ipcRenderer.send('minimize-window'),
-    restoreWindow: () => ipcRenderer.send('restore-window'),
+    // CORREGIDO: API mejorada para permitir remover listeners
+    activateKey: (callback) => {
+        ipcRenderer.on("activate-key", callback);
+        // Retornar función para remover el listener
+        return () => ipcRenderer.removeListener("activate-key", callback);
+    },
+    minimizeWindow: () => ipcRenderer.send("minimize-window"),
+    restoreWindow: () => ipcRenderer.send("restore-window"),
+    openExternal: (url) => ipcRenderer.send("open-external", url),
+    registerToggleKeys: (keysString) =>
+        ipcRenderer.send("register-toggle-keys", keysString),
     isRunning: () => {
-        return ipcRenderer.invoke('is-running')
-            .then(response => {
+        return ipcRenderer
+            .invoke("is-running")
+            .then((response) => {
                 return response;
             })
-            .catch(error => {
+            .catch((error) => {
+                console.error("Error checking if running:", error);
+                return false;
             });
     },
     stop: () => {
-        return ipcRenderer.invoke('stop')
-            .then(response => {
+        return ipcRenderer
+            .invoke("stop")
+            .then((response) => {
                 return response;
             })
-            .catch(error => {
+            .catch((error) => {
+                console.error("Error stopping process:", error);
+                return "error";
+            });
+    },
+    stopClicking: () => {
+        return ipcRenderer
+            .invoke("stop")
+            .then((response) => {
+                return response;
+            })
+            .catch((error) => {
+                console.error("Error stopping process:", error);
+                return "error";
             });
     },
     on: (channel, listener) => {
         ipcRenderer.on(channel, listener);
-    }
+        // CRÍTICO: Retornar función para remover el listener
+        return () => ipcRenderer.removeListener(channel, listener);
+    },
+    setMinimizeToTray: (enabled) =>
+        ipcRenderer.send("set-minimize-to-tray", enabled),
+    getMinimizeToTray: () => ipcRenderer.invoke("get-minimize-to-tray"),
+    updateTrayMenu: () => ipcRenderer.send("update-tray-menu"),
 });

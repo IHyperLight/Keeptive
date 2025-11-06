@@ -1,7 +1,27 @@
 # PyMsgBox - A simple, cross-platform, pure Python module for JavaScript-like message boxes.
+from __future__ import annotations
+from typing import Optional, Any
 # By Al Sweigart al@inventwithpython.com
 
+
 __version__ = "1.0.9"
+
+__all__ = [
+    "alert",
+    "confirm",
+    "prompt",
+    "password",
+    "OK_TEXT",
+    "CANCEL_TEXT",
+    "YES_TEXT",
+    "NO_TEXT",
+    "RETRY_TEXT",
+    "ABORT_TEXT",
+    "IGNORE_TEXT",
+    "TRY_AGAIN_TEXT",
+    "CONTINUE_TEXT",
+    "TIMEOUT_RETURN_VALUE",
+]
 
 # Modified BSD License
 # Derived from Stephen Raymond Ferg's EasyGui http://easygui.sourceforge.net/
@@ -33,11 +53,10 @@ TODO Roadmap:
 - Add mouse clicks to unit testing.
 - progress() function to display a progress bar
 - Maybe other types of dialog: open, save, file/folder picker, etc.
+- I18N support (internationalization)
 """
 
 import sys
-
-RUNNING_PYTHON_2 = sys.version_info[0] == 2
 
 # Because PyAutoGUI requires PyMsgBox but might be installed on systems
 # without tkinter, we don't want a lack of tkinter to cause installation
@@ -46,10 +65,7 @@ RUNNING_PYTHON_2 = sys.version_info[0] == 2
 TKINTER_IMPORT_SUCCEEDED = True
 
 try:
-    if RUNNING_PYTHON_2:
-        import Tkinter as tk
-    else:
-        import tkinter as tk
+    import tkinter as tk
 
     rootWindowPosition = "+300+200"
 
@@ -89,23 +105,16 @@ CONTINUE_TEXT = "Continue"
 
 TIMEOUT_RETURN_VALUE = "Timeout"
 
-# Initialize some global variables that will be reset later
-__choiceboxMultipleSelect = None
-__widgetTexts = None
-__replyButtonText = None
-__choiceboxResults = None
-__firstWidget = None
-__enterboxText = None
-__enterboxDefaultText = ""
-__multenterboxText = ""
-choiceboxChoices = None
-choiceboxWidget = None
-entryWidget = None
-boxRoot = None
-buttonsFrame = None
 
+from typing import Optional, Any
 
-def _alertTkinter(text="", title="", button=OK_TEXT, root=None, timeout=None):
+def _alertTkinter(
+    text: str = "",
+    title: str = "",
+    button: str = OK_TEXT,
+    root: Optional[Any] = None,
+    timeout: Optional[int] = None
+) -> str:
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
     text = str(text)
@@ -122,13 +131,16 @@ alert = _alertTkinter
 
 
 def _confirmTkinter(
-    text="", title="", buttons=(OK_TEXT, CANCEL_TEXT), root=None, timeout=None
-):
-    """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
+    text: str = "",
+    title: str = "",
+    buttons: tuple = (OK_TEXT, CANCEL_TEXT),
+    root: Optional[Any] = None,
+    timeout: Optional[int] = None
+) -> Optional[str]:
+    """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on, or None if the dialog box was closed."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
-    text = str(text)
     return _buttonbox(
-        msg=text,
+        msg=str(text),
         title=title,
         choices=[str(b) for b in buttons],
         root=root,
@@ -139,7 +151,13 @@ def _confirmTkinter(
 confirm = _confirmTkinter
 
 
-def _promptTkinter(text="", title="", default="", root=None, timeout=None):
+def _promptTkinter(
+    text: str = "",
+    title: str = "",
+    default: str = "",
+    root: Optional[Any] = None,
+    timeout: Optional[int] = None
+) -> Optional[str]:
     """Displays a message box with text input, and OK & Cancel buttons. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
     text = str(text)
@@ -151,7 +169,14 @@ def _promptTkinter(text="", title="", default="", root=None, timeout=None):
 prompt = _promptTkinter
 
 
-def _passwordTkinter(text="", title="", default="", mask="*", root=None, timeout=None):
+def _passwordTkinter(
+    text: str = "",
+    title: str = "",
+    default: str = "",
+    mask: str = "*",
+    root: Optional[Any] = None,
+    timeout: Optional[int] = None
+) -> Optional[str]:
     """Displays a message box with text input, and OK & Cancel buttons. Typed characters appear as *. Returns the text entered, or None if Cancel was clicked."""
     assert TKINTER_IMPORT_SUCCEEDED, "Tkinter is required for pymsgbox"
     text = str(text)
@@ -191,7 +216,7 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
     @arg title: the window title
     @arg choices: a list or tuple of the choices to be displayed
     """
-    global boxRoot, __replyButtonText, __widgetTexts, buttonsFrame
+    global boxRoot, __replyButtonText, buttonsFrame, __firstWidget
 
     # Initialize __replyButtonText to the first choice.
     # This is what will be used if the window is closed by the close button.
@@ -220,7 +245,7 @@ def _buttonbox(msg, title, choices, root=None, timeout=None):
 
     # -------------------- place the widgets in the frames -----------------------
     messageWidget = tk.Message(messageFrame, text=msg, width=400)
-    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))
+    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))  # pyright: ignore[reportArgumentType]
     messageWidget.pack(side=tk.TOP, expand=tk.YES, fill=tk.X, padx="3m", pady="3m")
 
     __put_buttons_in_buttonframe(choices)
@@ -248,7 +273,6 @@ def __put_buttons_in_buttonframe(choices):
     """Put the buttons in the buttons frame"""
     global __widgetTexts, __firstWidget, buttonsFrame
 
-    __firstWidget = None
     __widgetTexts = {}
 
     i = 0
@@ -322,9 +346,9 @@ def __fillablebox(msg, title="", default="", mask=None, root=None, timeout=None)
     global boxRoot, __enterboxText, __enterboxDefaultText
     global cancelButton, entryWidget, okButton
 
-    if title == None:
-        title == ""
-    if default == None:
+    if title is None:
+        title = ""
+    if default is None:
         default = ""
     __enterboxDefaultText = default
     __enterboxText = __enterboxDefaultText
@@ -360,13 +384,13 @@ def __fillablebox(msg, title="", default="", mask=None, root=None, timeout=None)
 
     # -------------------- the msg widget ----------------------------
     messageWidget = tk.Message(messageFrame, width="4.5i", text=msg)
-    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))
+    messageWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, PROPORTIONAL_FONT_SIZE))  # pyright: ignore[reportArgumentType]
     messageWidget.pack(side=tk.RIGHT, expand=1, fill=tk.BOTH, padx="3m", pady="3m")
 
     # --------- entryWidget ----------------------------------------------
     entryWidget = tk.Entry(entryFrame, width=40)
     _bindArrows(entryWidget, skipArrowKeys=True)
-    entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, TEXT_ENTRY_FONT_SIZE))
+    entryWidget.configure(font=(PROPORTIONAL_FONT_FAMILY, TEXT_ENTRY_FONT_SIZE))  # pyright: ignore[reportArgumentType]
     if mask:
         entryWidget.configure(show=mask)
     entryWidget.pack(side=tk.LEFT, padx="3m")

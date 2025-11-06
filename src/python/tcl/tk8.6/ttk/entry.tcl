@@ -141,6 +141,7 @@ bind TEntry <Tab> 			{# nothing}
 # as a Command modifier.
 if {[tk windowingsystem] eq "aqua"} {
     bind TEntry <Command-Key>		{# nothing}
+    bind TEntry <Mod4-Key>		{# nothing}
 }
 # Tk-on-Cocoa generates characters for these two keys. [Bug 2971663]
 bind TEntry <<PrevLine>>		{# nothing}
@@ -253,6 +254,10 @@ set ::ttk::entry::State(startNext) \
 	[string equal [tk windowingsystem] "win32"]
 
 proc ttk::entry::NextWord {w start} {
+    # the check on [winfo class] is because the spinbox and combobox also use this proc
+    if {[winfo class $w] eq "TEntry" && [$w cget -show] ne ""} {
+	return end
+    }
     variable State
     set pos [tcl_endOfWord [$w get] [$w index $start]]
     if {$pos >= 0 && $State(startNext)} {
@@ -267,6 +272,10 @@ proc ttk::entry::NextWord {w start} {
 ## PrevWord -- Find the previous word position.
 #
 proc ttk::entry::PrevWord {w start} {
+    # the check on [winfo class] is because the spinbox and combobox also use this proc
+    if {[winfo class $w] eq "TEntry" && [$w cget -show] ne ""} {
+	return 0
+    }
     set pos [tcl_startOfPreviousWord [$w get] [$w index $start]]
     if {$pos < 0} {
 	return 0

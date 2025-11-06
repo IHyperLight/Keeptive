@@ -1,6 +1,6 @@
 # A sample shell copy hook.
 
-# To demostrate:
+# To demonstrate:
 # * Execute this script to register the context menu.
 # * Open Windows Explorer
 # * Attempt to move or copy a directory.
@@ -9,7 +9,7 @@
 import pythoncom
 import win32con
 import win32gui
-from win32com.shell import shell, shellcon
+from win32com.shell import shell
 
 
 # Our shell extension.

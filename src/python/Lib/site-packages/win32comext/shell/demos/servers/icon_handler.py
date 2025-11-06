@@ -2,7 +2,7 @@
 # ICO file.  ICO files are found in the Python directory - generally there will
 # be 3 icons found.
 #
-# To demostrate:
+# To demonstrate:
 # * Execute this script to register the context menu.
 # * Open Windows Explorer, and browse to a directory with a .py file.
 # * Note the pretty, random selection of icons!
@@ -13,9 +13,8 @@ import random
 import sys
 
 import pythoncom
-import win32gui
 import winerror
-from win32com.shell import shell, shellcon
+from win32com.shell import shell
 
 ico_files = glob.glob(os.path.join(sys.prefix, "*.ico"))
 if not ico_files:

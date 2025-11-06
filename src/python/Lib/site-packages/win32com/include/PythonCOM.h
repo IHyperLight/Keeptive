@@ -265,6 +265,10 @@ PYCOM_EXPORT BOOL PyCom_PyObjectAsSTATPROPSETSTG(PyObject *, STATPROPSETSTG *);
 PYCOM_EXPORT PyObject *PyObject_FromCurrency(CURRENCY &cy);
 PYCOM_EXPORT BOOL PyObject_AsCurrency(PyObject *ob, CURRENCY *pcy);
 
+// Decimal support.
+PYCOM_EXPORT PyObject *PyObject_FromDecimal(DECIMAL &dec);
+PYCOM_EXPORT BOOL PyObject_AsDecimal(PyObject *ob, DECIMAL *pdec);
+
 // OLEMENUGROUPWIDTHS are used by axcontrol, shell, etc
 PYCOM_EXPORT BOOL PyObject_AsOLEMENUGROUPWIDTHS(PyObject *oblpMenuWidths, OLEMENUGROUPWIDTHS *pWidths);
 PYCOM_EXPORT PyObject *PyObject_FromOLEMENUGROUPWIDTHS(const OLEMENUGROUPWIDTHS *pWidths);
@@ -425,8 +429,8 @@ class PYCOM_EXPORT PyOleNothing : public PyObject {
 // The other 2 wrap directly around the underlying method call.
 #define PY_INTERFACE_METHOD
 // Identical to Py_BEGIN_ALLOW_THREADS except no { !!!
-#define PY_INTERFACE_PRECALL PyThreadState *_save = PyEval_SaveThread();
-#define PY_INTERFACE_POSTCALL PyEval_RestoreThread(_save);
+#define PY_INTERFACE_PRECALL PyThreadState *_save = PyEval_SaveThread()
+#define PY_INTERFACE_POSTCALL PyEval_RestoreThread(_save)
 
 /////////////////////////////////////////////////////////////////////////////
 // class PyIUnknown
@@ -692,6 +696,7 @@ class PYCOM_EXPORT PythonOleArgHelper {
         VARIANT *m_varBuf;
         DATE m_dateBuf;
         CY m_cyBuf;
+        DECIMAL m_decBuf;
     };
 };
 

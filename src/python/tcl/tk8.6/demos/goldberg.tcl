@@ -77,7 +77,6 @@ set S(mode) $::MSTART
 
 # Colors for everything
 set C(fg) black
-set C(bg) gray75
 set C(bg) cornflowerblue
 
 set C(0) white;		set C(1a) darkgreen;	set C(1b) yellow
@@ -92,6 +91,7 @@ set C(17) \#A65353;	set C(18) $C(fg);	set C(19) gray50
 set C(20) cyan;		set C(21) gray65;	set C(22) $C(20)
 set C(23a) blue;	set C(23b) red;		set C(23c) yellow
 set C(24a) red;		set C(24b) white;
+set C(24c) black;	set C(26) $C(0);
 
 proc DoDisplay {w} {
     global S C
@@ -113,9 +113,9 @@ proc DoDisplay {w} {
     DoCtrlFrame $w
     DoDetailFrame $w
     if {[tk windowingsystem] ne "aqua"} {
-	ttk::button $w.show -text "\u00bb" -command [list ShowCtrl $w] -width 2
+	ttk::button $w.show -text "\xbb" -command [list ShowCtrl $w] -width 2
     } else {
-	button $w.show -text "\u00bb" -command [list ShowCtrl $w] -width 2 -highlightbackground $C(bg)
+	button $w.show -text "\xbb" -command [list ShowCtrl $w] -width 2 -highlightbackground $C(bg)
     }
     place $w.show -in $w.c -relx 1 -rely 0 -anchor ne
     update
@@ -136,7 +136,7 @@ proc DoCtrlFrame {w} {
     ttk::labelframe $w.message -text "Message"
     ttk::entry $w.message.e -textvariable S(message) -justify center
     ttk::labelframe $w.speed -text "Speed: 0"
-    ttk::scale $w.speed.scale -orient h -from 1 -to 10 -variable S(speed)
+    ttk::scale $w.speed.scale -orient horizontal -from 1 -to 10 -variable S(speed)
     ttk::button $w.about -text About -command [list About $w]
 
     grid $w.start -in $w.ctrl -row 0 -sticky ew
@@ -153,9 +153,9 @@ proc DoCtrlFrame {w} {
     raise $w.details
     raise $w.details.cb
     grid rowconfigure $w.ctrl 50 -weight 1
-    trace variable ::S(mode) w	  [list ActiveGUI $w]
-    trace variable ::S(details) w [list ActiveGUI $w]
-    trace variable ::S(speed) w	  [list ActiveGUI $w]
+    trace add variable ::S(mode) write	  [list ActiveGUI $w]
+    trace add variable ::S(details) write [list ActiveGUI $w]
+    trace add variable ::S(speed) write	  [list ActiveGUI $w]
 
     grid $w.message -in $w.ctrl -row 98 -sticky ew -pady 5
     grid $w.message.e -sticky nsew
@@ -185,7 +185,6 @@ proc DoDetailFrame {w} {
     set w2 $w.details.f
     ttk::frame $w2
 
-    set bd 2
     ttk::label $w2.l -textvariable S(cnt) -background white
     grid $w2.l - - - -sticky ew -row 0
     for {set i 1} {1} {incr i} {
@@ -204,10 +203,10 @@ proc DoDetailFrame {w} {
 proc ShowCtrl {w} {
     if {[winfo ismapped $w.ctrl]} {
 	pack forget $w.ctrl
-	$w.show config -text "\u00bb"
+	$w.show config -text "\xbb"
     } else {
 	pack $w.ctrl -side right -fill both -ipady 5
-	$w.show config -text "\u00ab"
+	$w.show config -text "\xab"
     }
 }
 
@@ -272,7 +271,7 @@ proc Go {w {who {}}} {
     set now [clock clicks -milliseconds]
     catch {after cancel $animationCallbacks(goldberg)}
     if {$who ne ""} {				;# Start here for debugging
-	set S(active) $who;
+	set S(active) $who
 	set S(mode) $MGO
     }
     if {$S(mode) == -1} return			;# Debugging
@@ -1586,6 +1585,7 @@ proc Move24 {w {step {}}} {
 		-width 10 -smooth 1
 	set msg [subst $S(message)]
 	$w.c create text [Centroid $w I24] -text $msg -tag {I24 I24t} \
+		-fill $::C(24c) \
 		-justify center -font {{Times Roman} 18 bold}
 	return 1
     }
@@ -1619,6 +1619,7 @@ proc Move26 {w {step {}}} {
     if {$step >= 3} {
 	$w.c delete I24 I26
 	$w.c create text 430 755 -anchor s -tag I26 \
+		-fill $::C(26) \
 		-text "click to continue" -font {{Times Roman} 24 bold}
 	bind $w.c <Button-1> [list Reset $w]
 	return 4

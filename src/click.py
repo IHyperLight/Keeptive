@@ -199,7 +199,7 @@ virtual_key_codes = {
 }
 
 
-def clicks(mode, pause, interval, timed, location, click, window_strings):
+def clicks(mode, pause, interval, timed, location, click, hold_time, window_strings):
     # Función para obtener las coordenadas exactas donde hacer click o hacia donde mover el mouse
     def get_location(hwnd):
         # Obtener el rectángulo de la ventana (cliente, es decir, solo el contenido, sin la barra de título)
@@ -210,27 +210,38 @@ def clicks(mode, pause, interval, timed, location, click, window_strings):
             x = (client_rect[0] + client_rect[2]) // 2
             y = (client_rect[1] + client_rect[3]) // 2
         else:
-            client_top_left = win32gui.ClientToScreen(hwnd, (0, 0))
+            try:
+                client_top_left = win32gui.ClientToScreen(hwnd, (0, 0))
 
-            # Coordenadas absolutas
-            absolute_left = client_top_left[0]
-            absolute_top = client_top_left[1]
-            absolute_right = absolute_left + (client_rect[2] - client_rect[0])
-            absolute_bottom = absolute_top + (client_rect[3] - client_rect[1])
+                # Coordenadas absolutas
+                absolute_left = client_top_left[0]
+                absolute_top = client_top_left[1]
+                absolute_right = absolute_left + (client_rect[2] - client_rect[0])
+                absolute_bottom = absolute_top + (client_rect[3] - client_rect[1])
 
-            ax, ay = map(int, location.split(","))
+                coords = location.split(",")
+                if len(coords) != 2:
+                    print(f"Invalid location format", file=sys.stderr)
+                    sys.exit(6)
 
-            if (
-                ax < absolute_left
-                or ax > absolute_right
-                or ay < absolute_top
-                or ay > absolute_bottom
-            ):
-                print(f"Picked location outside the window margins", file=sys.stderr)
+                ax, ay = map(int, coords)
+
+                if (
+                    ax < absolute_left
+                    or ax > absolute_right
+                    or ay < absolute_top
+                    or ay > absolute_bottom
+                ):
+                    print(
+                        f"Picked location outside the window margins", file=sys.stderr
+                    )
+                    sys.exit(6)
+                else:
+                    x = ax - absolute_left
+                    y = ay - absolute_top
+            except (ValueError, IndexError) as e:
+                print(f"Error parsing location coordinates: {e}", file=sys.stderr)
                 sys.exit(6)
-            else:
-                x = ax - absolute_left
-                y = ay - absolute_top
         return x, y
 
     # Función para obtener los minutos si es que se especificó tiempo y generar una época
@@ -241,7 +252,7 @@ def clicks(mode, pause, interval, timed, location, click, window_strings):
 
     # Función para evaluar si ya se alcanzó el tiempo establecido
     def stop_timer(minutes, begin):
-        if minutes and time.time() - begin >= minutes:
+        if minutes is not None and time.time() - begin >= minutes:
             print(f"Time completed", file=sys.stderr)
             sys.exit(4)
 
@@ -256,42 +267,95 @@ def clicks(mode, pause, interval, timed, location, click, window_strings):
                 pyautogui.moveTo(x + 1, y)
                 pyautogui.moveTo(x, y)
             else:
-                x, y = map(int, location.split(","))
-                pyautogui.moveTo(x, y, duration=0.5)
+                try:
+                    coords = location.split(",")
+                    if len(coords) != 2:
+                        print(
+                            f"Invalid location format for system mode", file=sys.stderr
+                        )
+                        sys.exit(6)
+                    x, y = map(int, coords)
+                    pyautogui.moveTo(x, y, duration=0.5)
+                except (ValueError, IndexError) as e:
+                    print(
+                        f"Error parsing location for system mode: {e}", file=sys.stderr
+                    )
+                    sys.exit(6)
         elif mode == "click":
+            # Convertir hold_time de milisegundos a segundos
+            hold_time_seconds = hold_time / 1000.0
+
             if location == "":
                 # Evaluación del botón del mouse seleccionado
                 if click == "L-click":
-                    pyautogui.click()
+                    pyautogui.mouseDown()
+                    time.sleep(hold_time_seconds)
+                    pyautogui.mouseUp()
                 elif click == "R-click":
-                    pyautogui.click(button="right")
+                    pyautogui.mouseDown(button="right")
+                    time.sleep(hold_time_seconds)
+                    pyautogui.mouseUp(button="right")
                 elif click == "M-click":
-                    pyautogui.click(button="middle")
+                    pyautogui.mouseDown(button="middle")
+                    time.sleep(hold_time_seconds)
+                    pyautogui.mouseUp(button="middle")
             else:
-                x, y = map(int, location.split(","))
-                # Evaluación del botón del mouse seleccionado
-                if click == "L-click":
-                    pyautogui.click(x, y)
-                elif click == "R-click":
-                    pyautogui.click(x, y, button="right")
-                elif click == "M-click":
-                    pyautogui.click(x, y, button="middle")
+                try:
+                    coords = location.split(",")
+                    if len(coords) != 2:
+                        print(
+                            f"Invalid location format for system mode", file=sys.stderr
+                        )
+                        sys.exit(6)
+                    x, y = map(int, coords)
+                    # Evaluación del botón del mouse seleccionado
+                    if click == "L-click":
+                        pyautogui.mouseDown(x, y)
+                        time.sleep(hold_time_seconds)
+                        pyautogui.mouseUp(x, y)
+                    elif click == "R-click":
+                        pyautogui.mouseDown(x, y, button="right")
+                        time.sleep(hold_time_seconds)
+                        pyautogui.mouseUp(x, y, button="right")
+                    elif click == "M-click":
+                        pyautogui.mouseDown(x, y, button="middle")
+                        time.sleep(hold_time_seconds)
+                        pyautogui.mouseUp(x, y, button="middle")
+                except (ValueError, IndexError) as e:
+                    print(
+                        f"Error parsing location for system mode: {e}", file=sys.stderr
+                    )
+                    sys.exit(6)
         else:
-            key = mode.lower()
-            if key in pyautogui.KEYBOARD_KEYS and key not in invalid:
-                pyautogui.press(key)
-            else:
+            # Soportar múltiples keys separadas por espacio
+            keys = [k.strip() for k in mode.lower().split() if k.strip()]
+            if not keys:
                 print(
                     f"Enter a valid key name to use the key press mode",
                     file=sys.stderr,
                 )
                 sys.exit(5)
 
+            # Presionar cada key en secuencia
+            for key in keys:
+                if key in pyautogui.KEYBOARD_KEYS and key not in invalid:
+                    pyautogui.press(key)
+                    time.sleep(0.05)  # Pequeño delay entre keys
+                else:
+                    print(
+                        f"Invalid key name '{key}' in key sequence",
+                        file=sys.stderr,
+                    )
+                    sys.exit(5)
+
     # Función para enviar clic por ventana
     def click_window(window):
         try:
             minimized_status = False
             # Obtener identificador (handler) de la ventana actual
+            if not hasattr(window, "_hWnd"):
+                print(f"Invalid window object", file=sys.stderr)
+                sys.exit(2)
             hwnd = window._hWnd
             # Verificar si la ventana aún se encuentra activa
             if not win32gui.IsWindow(hwnd):
@@ -346,22 +410,32 @@ def clicks(mode, pause, interval, timed, location, click, window_strings):
                 # Enviar la instrucción de activación a la ventana
                 win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0)
             else:
-                key = mode.lower()
-                if key in virtual_key_codes:
-                    VK_CODE = virtual_key_codes[key]
-                    # Enviar una instrucción de activación a la ventana para asegurar la correcta interacción
-                    win32gui.SendMessage(
-                        hwnd, win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0
-                    )
-                    win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, VK_CODE, 0)
-                    time.sleep(0.01)
-                    win32api.SendMessage(hwnd, win32con.WM_KEYUP, VK_CODE, 0)
-                else:
+                # Soportar múltiples keys separadas por espacio
+                keys = [k.strip() for k in mode.lower().split() if k.strip()]
+                if not keys:
                     print(
                         f"Enter a valid key name to use the key press mode",
                         file=sys.stderr,
                     )
                     sys.exit(5)
+
+                # Enviar una instrucción de activación a la ventana para asegurar la correcta interacción
+                win32gui.SendMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0)
+
+                # Presionar cada key en secuencia
+                for key in keys:
+                    if key in virtual_key_codes:
+                        VK_CODE = virtual_key_codes[key]
+                        win32api.SendMessage(hwnd, win32con.WM_KEYDOWN, VK_CODE, 0)
+                        time.sleep(0.01)
+                        win32api.SendMessage(hwnd, win32con.WM_KEYUP, VK_CODE, 0)
+                        time.sleep(0.05)  # Pequeño delay entre keys
+                    else:
+                        print(
+                            f"Invalid key name '{key}' in key sequence",
+                            file=sys.stderr,
+                        )
+                        sys.exit(5)
             # Mandar ventana al fondo, detrás de todas las demás, después de haber mandado el click en el caso de haber sido una ventana minimizada
             if minimized_status:
                 win32gui.SetWindowPos(
@@ -377,18 +451,28 @@ def clicks(mode, pause, interval, timed, location, click, window_strings):
             print(f"Error sending command to window: {e}", file=sys.stderr)
             sys.exit(3)
 
+    # Validar botón del mouse para modos que lo requieren
+    if mode in ["click", "move"]:
+        if click not in ["L-click", "R-click", "M-click"]:
+            print(f"Invalid mouse button: {click}", file=sys.stderr)
+            sys.exit(9)
+
     # Comprobar si se eligió todo el sistema
     if window_strings[0] == "":
         minutes, begin = start_timer(timed)
-        end_time = begin + minutes if minutes else None
+        end_time = begin + minutes if minutes is not None else None
         # Iniciar ciclo de clics en todo el sistema
         while True:
             click_system(mode)
             stop_timer(minutes, begin)
-            time.sleep(min(interval, end_time - time.time()) if end_time else interval)
-            if end_time and time.time() >= end_time:
-                print(f"Time completed", file=sys.stderr)
-                sys.exit(4)
+            if end_time is not None:
+                remaining = end_time - time.time()
+                if remaining <= 0:
+                    print(f"Time completed", file=sys.stderr)
+                    sys.exit(4)
+                time.sleep(min(interval, remaining))
+            else:
+                time.sleep(interval)
 
     # Actualizar valor de pause
     if pause == "true":
@@ -408,28 +492,67 @@ def clicks(mode, pause, interval, timed, location, click, window_strings):
         sys.exit(1)
 
     minutes, begin = start_timer(timed)
-    end_time = begin + minutes if minutes else None
+    end_time = begin + minutes if minutes is not None else None
     # Iniciar ciclo de clics en ventanas específicas
     while True:
         for window in windows:
             click_window(window)
         stop_timer(minutes, begin)
-        time.sleep(min(interval, end_time - time.time()) if end_time else interval)
-        if end_time and time.time() >= end_time:
-            print(f"Time completed", file=sys.stderr)
-            sys.exit(4)
+        if end_time is not None:
+            remaining = end_time - time.time()
+            if remaining <= 0:
+                print(f"Time completed", file=sys.stderr)
+                sys.exit(4)
+            time.sleep(min(interval, remaining))
+        else:
+            time.sleep(interval)
 
 
 if __name__ == "__main__":
-    # Obtener las respuestas desde el main
-    mode = sys.argv[1]
-    pause = sys.argv[2]
-    interval = float(sys.argv[3])
-    if sys.argv[4] != "":
-        timed = float(sys.argv[4])
-    else:
-        timed = sys.argv[4]
-    location = sys.argv[5]
-    click = sys.argv[6]
-    window_strings = sys.argv[7:]
-    clicks(mode, pause, interval, timed, location, click, window_strings)
+    try:
+        # Obtener las respuestas desde el main
+        if len(sys.argv) < 8:
+            print(f"Insufficient arguments provided", file=sys.stderr)
+            sys.exit(7)
+
+        mode = sys.argv[1]
+        pause = sys.argv[2]
+
+        try:
+            interval = float(sys.argv[3])
+            if interval <= 0:
+                print(f"Interval must be greater than zero", file=sys.stderr)
+                sys.exit(7)
+        except ValueError:
+            print(f"Invalid interval value", file=sys.stderr)
+            sys.exit(7)
+
+        if sys.argv[4] != "":
+            try:
+                timed = float(sys.argv[4])
+                if timed <= 0:
+                    print(f"Time must be greater than zero", file=sys.stderr)
+                    sys.exit(7)
+            except ValueError:
+                print(f"Invalid time value", file=sys.stderr)
+                sys.exit(7)
+        else:
+            timed = sys.argv[4]
+
+        location = sys.argv[5]
+        click = sys.argv[6]
+
+        try:
+            hold_time = float(sys.argv[7])
+            if hold_time <= 0:
+                print(f"Hold time must be greater than zero", file=sys.stderr)
+                sys.exit(7)
+        except ValueError:
+            print(f"Invalid hold time value", file=sys.stderr)
+            sys.exit(7)
+
+        window_strings = sys.argv[8:]
+        clicks(mode, pause, interval, timed, location, click, hold_time, window_strings)
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        sys.exit(8)

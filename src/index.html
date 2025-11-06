@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Keeptive</title>
+        <link rel="stylesheet" href="style.css" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+            rel="stylesheet"
+        />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keeptive</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-    <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="
+        <!-- Content Security Policy -->
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="
         default-src 'self'; 
         script-src 'self'; 
         style-src 'self' https://fonts.googleapis.com; 
@@ -19,152 +23,336 @@
         object-src 'none';
         base-uri 'self';
         form-action 'self';
-    ">
-</head>
+    "
+        />
+    </head>
 
-<body>
-    <div class="container no-select">
-        <div class="left">
-            <img id="logo" src="assets/logo.svg">
-            <div class="form-group">
-                <label for="mode">Activation Modes</label>
-                <div id="mode">
-                    <div class="row-part" id="row-top">
-                        <button id="click-mode" class="mode-button active"
-                            data-tooltip="Select to use the discrete activation mode by mouse clicks"><img
-                                src="assets/click.svg"></button>
-                        <input pattern="[^\s]*" type="text" class="no-select" id="click" maxlength="12" value="L-click"
-                            readonly
-                            data-tooltip="Click to change the mouse button to press in mouse clicks mode.\nL : left, R : right, M : middle">
-                        <button id="move-mode" class="mode-button"
-                            data-tooltip="Select to use the discrete activation mode by mouse movement"><img
-                                src="assets/move.svg"></button>
-                        <button id="passive-mode" class="mode-button"
-                            data-tooltip="Select to use the discrete passive activation mode.\nThis mode sends an activation instruction to the window instead of a user interaction.\nIt can be useful for games or apps that suspend their image update during alt-tab">
-                            <img src="assets/passive.svg"></button>
-                    </div>
-                    <div class="row-part">
-                        <button id="key-mode" class="mode-button"
-                            data-tooltip="Select to use the discrete activation mode by key press"><img
-                                src="assets/key.svg"></button>
-                        <div id="column-part">
-                            <input disabled="true" pattern="[^\s]*" type="text" id="letter" maxlength="12"
-                                placeholder="Key" spellcheck="false"
-                                data-tooltip="Enter the key or the valid key name to press in key press mode">
-                            <button disabled="true" id="external-button"
-                                data-tooltip="Click to see all valid key names in your navigator"><img
-                                    src="assets/external.svg"></button>
+    <body>
+        <div class="container no-select">
+            <div class="left">
+                <img id="logo" src="assets/logo.svg" />
+                <div class="form-group">
+                    <label for="mode"
+                        >Activation Modes
+                        <span id="active-modes-counter">1 active</span></label
+                    >
+                    <div id="mode">
+                        <div class="row-part" id="row-top">
+                            <button
+                                id="click-mode"
+                                class="mode-button active"
+                                data-tooltip="Activate by simulating mouse clicks\nCan be combined with other modes"
+                            >
+                                <img src="assets/click.svg" />
+                            </button>
+                            <input
+                                pattern="[^\s]*"
+                                type="text"
+                                class="no-select"
+                                id="click"
+                                maxlength="12"
+                                value="L-click"
+                                readonly
+                                data-tooltip="Click to select mouse button for clicks\nL: left  R: right  M: middle"
+                            />
+                            <button
+                                id="move-mode"
+                                class="mode-button"
+                                data-tooltip="Activate by simulating mouse movement\nCan be combined with other modes"
+                            >
+                                <img src="assets/move.svg" />
+                            </button>
+                            <button
+                                id="passive-mode"
+                                class="mode-button"
+                                data-tooltip="Passive mode: sends activation signals to window\nCan be combined with other modes\nNote: Disables system-wide and location picker"
+                            >
+                                <img src="assets/passive.svg" />
+                            </button>
+                        </div>
+                        <div class="row-part">
+                            <button
+                                id="key-mode"
+                                class="mode-button"
+                                data-tooltip="Activate by simulating key presses\nCan be combined with other modes\nNote: Disables location picker"
+                            >
+                                <img src="assets/key.svg" />
+                            </button>
+                            <div id="column-part">
+                                <input
+                                    disabled="true"
+                                    type="text"
+                                    id="letter"
+                                    placeholder="Key(s)"
+                                    spellcheck="false"
+                                    data-tooltip="Enter keys to press (separate multiple keys with spaces)\nClick the ? button to see all valid key names"
+                                />
+                                <button
+                                    disabled="true"
+                                    id="external-button"
+                                    data-tooltip="View complete list of valid key names"
+                                >
+                                    <img src="assets/external.svg" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label
-                    for="one">Auto&emsp;&emsp;&emsp;&nbsp;Pick&emsp;&emsp;&emsp;&ensp;Interval&emsp;&ensp;&nbsp;Time</label>
-                <div id="one">
-                    <button id="pause-mode" class="pause-button active"
-                        data-tooltip="Select to automatically pause activation only when the window is in the foreground"><img
-                            src="assets/pause.svg"></button>
-                    <button id="location-button"
-                        data-tooltip="Select to pick a specific location for mouse clicks mode and mouse movement mode.\nDeselect to use the default location : the center of the window, or the current cursor position only if the entire system mode is selected">
-                        <img src="assets/location.svg" alt="Location">
-                    </button>
-                    <input type="number" id="interval" placeholder="Secs" value="60" step="any"
-                        data-tooltip="Use the mouse wheel or enter a value in seconds for the time interval between each action of the selected activation mode">
-                    <input type="number" id="time" placeholder="♾️Mins" step="any"
-                        data-tooltip="Use the mouse wheel or enter a value in minutes for the duration you want to run the activation.\nLeave the field empty to run the activation indefinitely">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="two">
-                    <label for="status">Status</label>
-                    <div class="status">
-                        <div id="circle"></div>
-                        <div id="notice">Inactive</div>
+                <div class="form-group">
+                    <div id="one">
+                        <div id="main-controls">
+                            <div class="button-with-label">
+                                <label for="location-button">Pick</label>
+                                <button
+                                    id="location-button"
+                                    data-tooltip="Pick a specific location for clicks and movement\nWhen disabled: uses window center (or cursor position for system-wide mode)"
+                                >
+                                    <img
+                                        src="assets/location.svg"
+                                        alt="Location"
+                                    />
+                                </button>
+                            </div>
+                            <div class="button-with-label">
+                                <label for="time">Time</label>
+                                <div class="input-column-part">
+                                    <input
+                                        type="number"
+                                        id="time"
+                                        placeholder="♾️"
+                                        step="any"
+                                        data-tooltip="Duration to run activation (in minutes)\nLeave empty for unlimited duration"
+                                    />
+                                    <span class="input-unit">Min</span>
+                                </div>
+                            </div>
+                            <div class="button-with-label">
+                                <label for="interval">Interval</label>
+                                <div class="input-column-part">
+                                    <input
+                                        type="number"
+                                        id="interval"
+                                        placeholder="S"
+                                        value="60"
+                                        step="any"
+                                        data-tooltip="Time between each activation action (in seconds)\nUse mouse wheel or type to adjust"
+                                    />
+                                    <span class="input-unit">S</span>
+                                </div>
+                            </div>
+                            <div class="button-with-label">
+                                <label for="hold-time">Hold</label>
+                                <div class="input-column-part">
+                                    <input
+                                        type="number"
+                                        id="hold-time"
+                                        placeholder="Ms"
+                                        value="1"
+                                        step="any"
+                                        disabled="true"
+                                        data-tooltip="Mouse button hold duration (in milliseconds)\nOnly available in system-wide mode"
+                                    />
+                                    <span class="input-unit">Ms</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-with-label">
+                            <label for="pause-mode">Auto</label>
+                            <button
+                                id="pause-mode"
+                                class="pause-button active"
+                                data-tooltip="Auto-pause activation when window is in foreground"
+                            >
+                                <img src="assets/pause.svg" />
+                            </button>
+                        </div>
+                        <div class="button-with-label">
+                            <label for="toggle-key">Toggle</label>
+                            <div id="toggle-column-part">
+                                <input
+                                    type="text"
+                                    id="toggle-key"
+                                    placeholder="Key(s)"
+                                    value="F6"
+                                    spellcheck="false"
+                                    data-tooltip="Global shortcut to start/stop activation\nF1-F12 work directly • Letters/numbers need Ctrl+ (e.g., Ctrl+A)\nSupports multiple keys (space-separated) • Leave empty to disable"
+                                />
+                                <button
+                                    id="toggle-external-button"
+                                    data-tooltip="View complete list of valid key names"
+                                >
+                                    <img src="assets/external.svg" />
+                                </button>
+                            </div>
+                        </div>
+                        <div class="button-with-label">
+                            <label for="status">Status</label>
+                            <div class="status">
+                                <div id="circle"></div>
+                                <div id="notice">OFF</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="start-back">
-                <button id="start" data-tooltip="Press F6 or click to start"><svg id="start-svg" width="400"
-                        height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M383.592 226.744c21.877-11.119 21.877-42.37 0-53.488L43.592.453A32 32 0 0 0 42.664 0H17.33C7.358 4.67 0 14.706 0 27.197v345.606C0 385.294 7.358 395.331 17.33 400h25.333q.465-.217.93-.453z"
-                            fill="url(#a)" />
-                        <defs>
-                            <linearGradient id="a" x1="0" y1="0" x2="350" y2="200" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#00FF0A" />
-                                <stop offset="1" stop-color="#00FFC2" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </button>
-            </div>
-            <div class="form-group">
-                <div id="error-message" class="fade-out"></div>
-            </div>
-        </div>
-        <div id="scroll-zone" class="right">
-            <div id="search-section">
-                <img id="decor" src="assets/decor.svg">
-                <p>Here you will see all your open windows. Search the ones you want to keep active discreetly even if
-                    they are minimized or choose the entire system option :)</p>
-                <div id="hr-impostor"></div>
-                <p>❔&nbsp;Hover over any button or input field for more info</p>
-                <label id="search-label" for="row-part">Activatable Modes</label>
-                <div class="row-part">
-                    <button id="search-button"
-                        data-tooltip="Click to search for all open windows to select the ones you want to keep active with your preferred activation mode">
-                        <img src="assets/search.svg" alt="Search">
-                    </button>
-                    <button id="w-button"
-                        data-tooltip="Select to keep the entire system awake with your preferred activation mode">
-                        <svg width="400" height="400" viewBox="0 0 433 433" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M200 0H0v200h200zm0 233H0v200h200zM233 0h200v200H233zm200 233H233v200h200z"
-                                fill="url(#c)" />
-                            <defs>
-                                <linearGradient id="c" x1="411" y1="324.556" x2="0" y2="86.444"
-                                    gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#0F8CE1" />
-                                    <stop offset="1" stop-color="#76F2FF" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </button>
+                <div class="button-with-label">
+                    <label for="start" id="start-label">Activate</label>
+                    <div id="start-back">
+                        <button
+                            id="start"
+                            data-tooltip="Press toggle key or click to start"
+                        >
+                            <svg
+                                id="start-svg"
+                                width="400"
+                                height="400"
+                                viewBox="0 0 400 400"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M383.592 226.744c21.877-11.119 21.877-42.37 0-53.488L43.592.453A32 32 0 0 0 42.664 0H17.33C7.358 4.67 0 14.706 0 27.197v345.606C0 385.294 7.358 395.331 17.33 400h25.333q.465-.217.93-.453z"
+                                    fill="url(#a)"
+                                />
+                                <defs>
+                                    <linearGradient
+                                        id="a"
+                                        x1="0"
+                                        y1="0"
+                                        x2="350"
+                                        y2="200"
+                                        gradientUnits="userSpaceOnUse"
+                                    >
+                                        <stop stop-color="#00FF0A" />
+                                        <stop offset="1" stop-color="#00FFC2" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div id="error-message" class="fade-out"></div>
                 </div>
             </div>
-            <div id="top-section">
-                <label id="top-label" for="top-section">Reload&emsp;&emsp;Back</label>
-                <button id="refresh-button" data-tooltip="Click to re-search all open windows">
-                    <img src="assets/reload.svg" alt="Reload">
-                </button>
-                <button id="close-button" data-tooltip="Click to go back to the previous screen">
-                    <img src="assets/close.svg" alt="Close">
-                </button>
-                <hr>
-            </div>
-            <label id="windows-label" for="window-list">Found Windows</label>
-            <div id="window-list" class="window-list">
-            </div>
-            <div id="empty-section">
-                <img id="decor" src="assets/empty.svg">
-                <p>No open windows found. Try opening some to keep them active!</p>
-            </div>
-            <div id="loading-section">
-                <svg class="spinner" viewBox="0 0 50 50">
-                    <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="6.5"></circle>
-                </svg>
-                <p>Searching windows...</p>
-            </div>
-            <div id="legend">
-                <a href="https://github.com/IHyperLight/Keeptive" draggable="false"><img id="git"
-                        src="assets/git.svg"></a>
-                <p>Made<br>with 🩷 by<br>Hyper Light</p>
+            <div id="scroll-zone" class="right">
+                <div id="tray-toggle-section">
+                    <label for="tray-toggle">Minimize<br />to tray</label>
+                    <input
+                        type="text"
+                        class="no-select toggle-switch"
+                        id="tray-toggle"
+                        value="OFF"
+                        readonly
+                        data-tooltip="When enabled: minimize to system tray\nWhen disabled: minimize to taskbar"
+                    />
+                </div>
+                <div id="search-section">
+                    <img id="decor" src="assets/decor.svg" />
+                    <p>
+                        🟢 Search for windows to keep active, even when
+                        minimized, or enable system-wide mode to keep everything
+                        awake :)
+                    </p>
+                    <div id="hr-impostor"></div>
+                    <p>
+                        ❔&nbsp;Hover over buttons and fields for detailed
+                        tooltips
+                    </p>
+                    <label id="search-label" for="row-part"
+                        >Activatable Modes</label
+                    >
+                    <div class="row-part">
+                        <button
+                            id="search-button"
+                            data-tooltip="Search for open windows to keep active\nSelect specific windows for targeted activation"
+                        >
+                            <img src="assets/search.svg" alt="Search" />
+                        </button>
+                        <button
+                            id="w-button"
+                            data-tooltip="Keep entire system awake (system-wide mode)\nActivates at system level instead of specific windows"
+                        >
+                            <svg
+                                width="400"
+                                height="400"
+                                viewBox="0 0 433 433"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M200 0H0v200h200zm0 233H0v200h200zM233 0h200v200H233zm200 233H233v200h200z"
+                                    fill="url(#c)"
+                                />
+                                <defs>
+                                    <linearGradient
+                                        id="c"
+                                        x1="411"
+                                        y1="324.556"
+                                        x2="0"
+                                        y2="86.444"
+                                        gradientUnits="userSpaceOnUse"
+                                    >
+                                        <stop stop-color="#0F8CE1" />
+                                        <stop offset="1" stop-color="#76F2FF" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="top-section">
+                    <label id="top-label" for="top-section"
+                        >Reload&emsp;&emsp;Back</label
+                    >
+                    <button
+                        id="refresh-button"
+                        data-tooltip="Refresh window list"
+                    >
+                        <img src="assets/reload.svg" alt="Reload" />
+                    </button>
+                    <button
+                        id="close-button"
+                        data-tooltip="Return to main screen"
+                    >
+                        <img src="assets/close.svg" alt="Close" />
+                    </button>
+                    <hr />
+                </div>
+                <label id="windows-label" for="window-list"
+                    >Found Windows</label
+                >
+                <div id="window-list" class="window-list"></div>
+                <div id="empty-section">
+                    <img id="decor" src="assets/empty.svg" />
+                    <p>
+                        No windows found. Open some applications and search
+                        again!
+                    </p>
+                </div>
+                <div id="loading-section">
+                    <svg class="spinner" viewBox="0 0 50 50">
+                        <circle
+                            class="path"
+                            cx="25"
+                            cy="25"
+                            r="20"
+                            fill="none"
+                            stroke-width="6.5"
+                        ></circle>
+                    </svg>
+                    <p>Searching windows...</p>
+                </div>
+                <div id="legend">
+                    <a
+                        href="https://github.com/IHyperLight/Keeptive"
+                        draggable="false"
+                        ><img id="git" src="assets/git.svg"
+                    /></a>
+                    <p>Made<br />with 🩷 by<br />Hyper Light</p>
+                </div>
             </div>
         </div>
-    </div>
-    <script src="renderer.js"></script>
-</body>
-
+        <script src="renderer.js"></script>
+    </body>
 </html>

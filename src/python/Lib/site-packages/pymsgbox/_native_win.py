@@ -7,6 +7,8 @@
 
 # The documentation for the MessageBox winapi is at:
 # https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-messagebox
+from __future__ import annotations
+from typing import Optional, Any
 
 import sys, ctypes
 import pymsgbox
@@ -45,20 +47,20 @@ IDYES = 0x6
 
 runningOnPython2 = sys.version_info[0] == 2
 if runningOnPython2:
-    messageBoxFunc = ctypes.windll.user32.MessageBoxA
+    messageBoxFunc = ctypes.windll.user32.MessageBoxA  # pyright: ignore[reportAttributeAccessIssue]
 else:  # Python 3 functions.
-    messageBoxFunc = ctypes.windll.user32.MessageBoxW
+    messageBoxFunc = ctypes.windll.user32.MessageBoxW  # pyright: ignore[reportAttributeAccessIssue]
 
 
 def alert(
-    text="",
-    title="",
-    button=pymsgbox.OK_TEXT,
-    root=None,
-    timeout=None,
-    icon=NO_ICON,
-    _tkinter=False,
-):
+    text: str = "",
+    title: str = "",
+    button: str = pymsgbox.OK_TEXT,
+    root: Optional[Any] = None,
+    timeout: Optional[int] = None,
+    icon: int = NO_ICON,
+    _tkinter: bool = False,
+) -> str:
     """Displays a simple message box with text and a single OK button. Returns the text of the button clicked on."""
     text = str(text)
     if (_tkinter) or (timeout is not None) or (button != pymsgbox.OK_TEXT):
@@ -71,15 +73,15 @@ def alert(
 
 
 def confirm(
-    text="",
-    title="",
-    buttons=(pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT),
-    root=None,
-    timeout=None,
-    icon=QUESTION,
-    _tkinter=False,
-):
-    """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on."""
+    text: str = "",
+    title: str = "",
+    buttons: tuple = (pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT),
+    root: Optional[Any] = None,
+    timeout: Optional[int] = None,
+    icon: int = QUESTION,
+    _tkinter: bool = False,
+) -> Optional[str]:
+    """Displays a message box with OK and Cancel buttons. Number and text of buttons can be customized. Returns the text of the button clicked on, or None if the dialog box was closed."""
     text = str(text)
     buttonFlag = None
     if len(buttons) == 1:
@@ -128,7 +130,7 @@ def confirm(
     elif retVal == IDNO:
         return pymsgbox.NO_TEXT
     elif retVal == IDTRYAGAIN:
-        return pymsgbox.TRY_TEXT
+        return pymsgbox.RETRY_TEXT
     elif retVal == IDRETRY:
         return pymsgbox.RETRY_TEXT
     elif retVal == IDIGNORE:

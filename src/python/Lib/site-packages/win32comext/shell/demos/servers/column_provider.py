@@ -3,7 +3,7 @@
 #  Using Shell Column Handlers for Detailed File Information,
 #  Raymond Chen, Microsoft Corporation, February 2000
 #
-# To demostrate:
+# To demonstrate:
 # * Execute this script to register the namespace.
 # * Open Windows Explorer
 # * Right-click an explorer column header - select "More"
@@ -15,7 +15,6 @@ import stat
 import commctrl
 import pythoncom
 from pywintypes import IID
-from win32com.server.util import wrap
 from win32com.shell import shell, shellcon
 
 IPersist_Methods = ["GetClassID"]

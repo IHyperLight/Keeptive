@@ -1,1 +1,16 @@
-<svg width="360" height="360" viewBox="0 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="75" y="15" width="270" height="270" rx="15" fill="#202020" stroke="#363636" stroke-width="30"/><rect x="15" y="75" width="270" height="270" rx="15" fill="#202020" stroke="#363636" stroke-width="30"/></svg>
+<svg width="360" height="360" viewBox="0 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_718_26)">
+<rect width="360" height="360" fill="#202020"/>
+<rect x="75" y="15" width="270" height="270" rx="15" fill="#202020" stroke="#363636" stroke-width="30"/>
+<rect x="15" y="75" width="270" height="270" rx="15" fill="#202020" stroke="#363636" stroke-width="30"/>
+<path d="M325.531 151.084L370.492 195.092L381.329 205.7L370.604 216.421L348.124 238.893L238.845 348.135L216.364 370.608L205.531 381.437L194.931 370.38L173.477 348.003L126.776 301.318L104.296 278.845L93.6835 268.237L104.296 257.629L148.32 213.619L158.925 203.018L169.529 213.619L191.911 235.993L206.497 250.034L282.758 173.799L304.211 151.422L314.7 140.482L325.531 151.084Z" fill="#363636" stroke="#202020" stroke-width="30"/>
+<rect x="248" y="319" width="67" height="41" fill="#202020"/>
+<rect x="287" y="280" width="73" height="80" fill="#202020"/>
+<rect x="327" y="247" width="33" height="61" fill="#202020"/>
+</g>
+<defs>
+<clipPath id="clip0_718_26">
+<rect width="360" height="360" fill="white"/>
+</clipPath>
+</defs>
+</svg>
