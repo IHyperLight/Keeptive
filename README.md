@@ -1,12 +1,12 @@
-# Keeptive - Auto Clicker & Discreet Window Interaction Tool
+# 🟢 Keeptive - Auto Clicker & Discreet Window Interaction Tool
 
 <div align="center">
 
-[![Download Keeptive](https://img.shields.io/badge/Download-Keeptive%20v1.2.0-brightgreen?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.0)
+[![Download Keeptive v1.2.0](https://img.shields.io/badge/Download-Keeptive%20v1.2.0-7C4DFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.0)
 
 </div>
 
-## 🟢 Overview
+## ✅ Overview
 
 -   📌 Keeptive is a Windows automation tool built with Electron and Python, designed to keep windows active by simulating user interactions such as clicks, movements, key presses, and passive signals, all discreetly and without interrupting your workflow.
 
@@ -14,7 +14,7 @@
 
 -   📌 Advanced features include customizable toggle shortcuts for instant start/stop control, system tray integration for background operation, auto-pause when windows are in foreground, precise location picking for click/movement actions, configurable intervals and durations, and the ability to combine multiple activation modes simultaneously for maximum flexibility.
 
-![Keeptive UI](https://github.com/user-attachments/assets/bd8b0919-c011-4001-8bff-9c92f000c1cc)
+![Keeptive UI](https://github.com/user-attachments/assets/9b9eab2f-a9d6-4075-9105-9335a6429721)
 
 ---
 
@@ -91,10 +91,10 @@
 
 ## ✔️ How To Use
 
-![Keeptive 1](https://github.com/user-attachments/assets/a997986e-dd8e-41fc-baf6-b7f20446f4da)
-![Keeptive 2](https://github.com/user-attachments/assets/c397d2a4-6ec4-43cb-899c-b0d3b4f7eff7)
-![Keeptive 3](https://github.com/user-attachments/assets/103c39d8-6815-4132-8cbf-be6a0254a90b)
-![Keeptive 4](https://github.com/user-attachments/assets/fe3b9b12-17ff-45bc-ac55-23d9fda596f5)
+![Keeptive 1](https://github.com/user-attachments/assets/330c4c1c-dc9f-4664-a3ea-a9b3a859dfc7)
+![Keeptive 2](https://github.com/user-attachments/assets/417edcd1-8c6d-4bd0-b8eb-108fceb49c3c)
+![Keeptive 3](https://github.com/user-attachments/assets/b15a634f-12e0-4076-8a5a-0168a9577bbf)
+![Keeptive 4](https://github.com/user-attachments/assets/04adb428-0e18-4d85-a9b8-4db8b34a27a2)
 
 ---
 
