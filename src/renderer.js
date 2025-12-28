@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     let interval;
+    let intervalMax;
     let mode;
     let previous;
     let initialModes; // NUEVO: Estado inicial de modos al hacer Start
@@ -29,6 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     tooltipDiv.className = "tooltip";
     document.body.appendChild(tooltipDiv);
 
+    // Variables para el timer de tiempo restante (Issue #2)
+    let timeRemainingInterval = null;
+    let startTime = null;
+    let totalDurationMs = null;
+
     const elements = {
         errorMessage: document.getElementById("error-message"),
         searchButton: document.getElementById("search-button"),
@@ -44,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scrollZone: document.getElementById("scroll-zone"),
         topSection: document.getElementById("top-section"),
         interval: document.getElementById("interval"),
+        intervalMax: document.getElementById("interval-max"),
         letter: document.getElementById("letter"),
         circle: document.getElementById("circle"),
         startBack: document.getElementById("start-back"),
@@ -51,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
         pauseButton: document.getElementById("pause-mode"),
         wButton: document.getElementById("w-button"),
         time: document.getElementById("time"),
+        timeRemaining: document.getElementById("time-remaining"),
+        timeRemainingValue: document.getElementById("time-remaining-value"),
         holdTime: document.getElementById("hold-time"),
         modeButtons: document.querySelectorAll(".mode-button"),
         clickModeButton: document.getElementById("click-mode"),
@@ -439,6 +448,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 updateButtonState(status);
                                 // NUEVO: Limpiar estado inicial al detener
                                 initialModes = undefined;
+                                // Detener timer de tiempo restante
+                                stopTimeRemainingTimer();
                             }
                             return response;
                         })
@@ -453,6 +464,82 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error checking if running:", error);
                 return "error";
             });
+    };
+
+    // Funciones para el timer de tiempo restante (Issue #2)
+    const formatTimeRemaining = (milliseconds) => {
+        if (milliseconds <= 0) return "00:00";
+
+        const totalSeconds = Math.ceil(milliseconds / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return `${hours}:${String(minutes).padStart(2, "0")}:${String(
+                seconds
+            ).padStart(2, "0")}`;
+        }
+        return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+            2,
+            "0"
+        )}`;
+    };
+
+    const updateTimeRemainingDisplay = () => {
+        if (!startTime || !totalDurationMs) return;
+
+        const elapsed = Date.now() - startTime;
+        const remaining = totalDurationMs - elapsed;
+
+        if (remaining <= 0) {
+            if (elements.timeRemainingValue) {
+                elements.timeRemainingValue.textContent = "00:00";
+            }
+            stopTimeRemainingTimer();
+            return;
+        }
+
+        if (elements.timeRemainingValue) {
+            elements.timeRemainingValue.textContent =
+                formatTimeRemaining(remaining);
+        }
+    };
+
+    const startTimeRemainingTimer = (durationMinutes) => {
+        // Limpiar timer anterior si existe
+        stopTimeRemainingTimer();
+
+        startTime = Date.now();
+        totalDurationMs = durationMinutes * 60 * 1000;
+
+        // Mostrar el display
+        if (elements.timeRemaining) {
+            elements.timeRemaining.style.display = "block";
+        }
+
+        // Actualizar inmediatamente
+        updateTimeRemainingDisplay();
+
+        // Actualizar cada segundo
+        timeRemainingInterval = setInterval(updateTimeRemainingDisplay, 1000);
+    };
+
+    const stopTimeRemainingTimer = () => {
+        if (timeRemainingInterval) {
+            clearInterval(timeRemainingInterval);
+            timeRemainingInterval = null;
+        }
+        startTime = null;
+        totalDurationMs = null;
+
+        // Ocultar el display
+        if (elements.timeRemaining) {
+            elements.timeRemaining.style.display = "none";
+        }
+        if (elements.timeRemainingValue) {
+            elements.timeRemainingValue.textContent = "--:--";
+        }
     };
 
     const getMode = () => {
@@ -525,6 +612,8 @@ document.addEventListener("DOMContentLoaded", () => {
         displayErrorMessage(error);
         status = false;
         updateButtonState(status);
+        // Detener timer de tiempo restante en caso de error
+        stopTimeRemainingTimer();
     };
 
     const handleListRefresh = () => {
@@ -596,6 +685,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let commands = []; // ACTUALIZADO: Array de comandos para múltiples modos
         if (!status) {
             interval = elements.interval.value;
+            intervalMax = elements.intervalMax.value;
             const modes = getMode(); // ACTUALIZADO: Ahora retorna array
             previous = [...modes]; // CORREGIDO: Crear copia del array para evitar reference leak
             initialModes = [...modes]; // NUEVO: Guardar estado inicial para comparaciones
@@ -668,6 +758,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
 
+                // CORREGIDO BUG #4: Validar combinación inválida passive + sistema
+                // Passive mode siempre requiere ventanas específicas, nunca sistema completo
+                if (hasPassiveMode && w) {
+                    showErrorAndOpenWindow(
+                        "Passive mode requires specific windows, not entire system",
+                        fromExternalTrigger
+                    );
+                    return;
+                }
+
                 if (!interval || interval === "") {
                     showErrorAndOpenWindow(
                         "Enter an interval value in seconds",
@@ -687,6 +787,29 @@ document.addEventListener("DOMContentLoaded", () => {
                         fromExternalTrigger
                     );
                     return;
+                }
+
+                // Validar intervalMax si está definido (Issue #1)
+                if (intervalMax && intervalMax !== "") {
+                    const intervalMaxNum = parseFloat(intervalMax);
+                    if (
+                        isNaN(intervalMaxNum) ||
+                        !isFinite(intervalMaxNum) ||
+                        intervalMaxNum <= 0
+                    ) {
+                        showErrorAndOpenWindow(
+                            "Enter a valid max interval greater than zero",
+                            fromExternalTrigger
+                        );
+                        return;
+                    }
+                    if (intervalMaxNum < intervalNum) {
+                        showErrorAndOpenWindow(
+                            "Max interval must be greater than or equal to min interval",
+                            fromExternalTrigger
+                        );
+                        return;
+                    }
                 }
 
                 if (time && time !== "") {
@@ -735,6 +858,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     modeValue, // Puede ser "click", "move", "passive", o la key específica
                     pause,
                     interval,
+                    intervalMax ? intervalMax : "", // Issue #1: Intervalo máximo para rango aleatorio
                     time,
                     location ? location : "",
                     click,
@@ -743,12 +867,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 ];
 
                 // Identificar el modo para el modeId
+                // CORREGIDO BUG #1: Usar identificador único para key mode
+                // para evitar colisiones cuando hay múltiples keys
                 let modeId;
                 if (["click", "move", "passive"].includes(modeValue)) {
                     modeId = modeValue;
                 } else {
-                    // Es key mode, usar como modeId "key"
-                    modeId = "key";
+                    // Es key mode, usar "key-{valor}" para identificación única
+                    modeId = `key-${modeValue}`;
                 }
 
                 commands.push({ modeId, command });
@@ -771,6 +897,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 status = false;
                                 resetChangeFade();
                                 updateButtonState(status);
+                                // Detener timer de tiempo restante
+                                stopTimeRemainingTimer();
                             }
                         })
                         .catch((error) => {
@@ -785,6 +913,14 @@ document.addEventListener("DOMContentLoaded", () => {
                                 status = true;
                                 resetChangeFade();
                                 updateButtonState(status);
+
+                                // Issue #2: Iniciar timer de tiempo restante si hay tiempo configurado
+                                if (time && time !== "") {
+                                    const timeNum = parseFloat(time);
+                                    if (!isNaN(timeNum) && timeNum > 0) {
+                                        startTimeRemainingTimer(timeNum);
+                                    }
+                                }
 
                                 // PROTECCIÓN: Activar protección temporal de 800ms
                                 startProtectionActive = true;
@@ -856,6 +992,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Location se deshabilita si passive o key están activos
         if (isPassiveActive || isKeyActive) {
+            // CORREGIDO BUG #6: Resetear location y remover clase active
+            // para evitar estado inconsistente cuando se deshabilita
+            if (elements.locationButton.classList.contains("active")) {
+                elements.locationButton.classList.remove("active");
+                elements.locationButton.classList.remove("stand");
+                location = "";
+                elements.locationButton.setAttribute(
+                    "data-tooltip",
+                    "Select to pick a specific location for mouse clicks mode and mouse movement mode.\\nDeselect to use the default location : the center of the window, or the current cursor position only if the entire system mode is selected"
+                );
+            }
             elements.locationButton.disabled = true;
         } else {
             // Solo habilitar si no está ya en uso (active)
@@ -872,6 +1019,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // W-button se deshabilita si passive está activo
         if (isPassiveActive) {
+            // CORREGIDO BUG #5: También remover clase active para evitar estado inconsistente
+            elements.wButton.classList.remove("active");
             elements.wButton.disabled = true;
         } else {
             elements.wButton.disabled = false;
@@ -1179,6 +1328,161 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // Si es punto, verificar que no haya otro punto ya
+        if (isDot && this.value.includes(".")) {
+            event.preventDefault();
+            return;
+        }
+    });
+
+    // Event listeners para intervalMax (Issue #1: Intervalo con rango aleatorio)
+    elements.intervalMax.addEventListener("change", () => {
+        if (status) {
+            handleChange(elements.intervalMax, intervalMax);
+        }
+    });
+
+    elements.intervalMax.addEventListener("input", function () {
+        const originalValue = this.value;
+        const cursorPosition = this.selectionStart;
+        let value = originalValue;
+
+        // Solo permitir dígitos (0-9) y punto decimal
+        value = value.replace(/[^\d.]/g, "");
+
+        // Prevenir múltiples puntos - solo el primero es válido
+        const firstDot = value.indexOf(".");
+        if (firstDot !== -1) {
+            value =
+                value.substring(0, firstDot + 1) +
+                value.substring(firstDot + 1).replace(/\./g, "");
+        }
+
+        // Limitar a 6 dígitos enteros y 3 decimales (formato: 999999.999)
+        const parts = value.split(".");
+        if (parts[0].length > 6) {
+            value =
+                parts[0].slice(0, 6) +
+                (parts[1] !== undefined ? "." + parts[1] : "");
+        }
+        if (parts[1] && parts[1].length > 3) {
+            value = parts[0] + "." + parts[1].slice(0, 3);
+        }
+
+        // Solo actualizar si el valor cambió
+        if (value !== originalValue) {
+            this.value = value;
+            const removedChars = originalValue.length - value.length;
+            const newCursorPosition = Math.max(
+                0,
+                cursorPosition - removedChars
+            );
+            this.setSelectionRange(newCursorPosition, newCursorPosition);
+        }
+    });
+
+    elements.intervalMax.addEventListener("wheel", function (event) {
+        event.preventDefault();
+
+        const step = 1;
+        const currentValue = parseFloat(this.value);
+        const isValidNumber = !isNaN(currentValue) && isFinite(currentValue);
+
+        function getDecimalCount(value) {
+            if (Math.floor(value) === value) return 0;
+            return value.toString().split(".")[1]?.length || 0;
+        }
+
+        const decimalCount = isValidNumber ? getDecimalCount(currentValue) : 0;
+        const maxLimit = 999999;
+
+        if (event.deltaY < 0) {
+            const baseValue = isValidNumber ? currentValue : 0;
+            const newValue = baseValue + step;
+            if (newValue > maxLimit) {
+                this.value = maxLimit.toFixed(0);
+            } else {
+                this.value = newValue.toFixed(decimalCount);
+            }
+        } else {
+            if (isValidNumber && currentValue > 0) {
+                const newValue = currentValue - step;
+                if (newValue <= 0) {
+                    this.value = "";
+                } else {
+                    this.value = newValue.toFixed(decimalCount);
+                }
+            }
+        }
+    });
+
+    elements.intervalMax.addEventListener("keydown", function (event) {
+        const allowedKeys = [
+            "Backspace",
+            "Delete",
+            "Tab",
+            "Escape",
+            "Enter",
+            "ArrowLeft",
+            "ArrowRight",
+            "ArrowUp",
+            "ArrowDown",
+            "Home",
+            "End",
+        ];
+
+        if (event.ctrlKey || event.metaKey) {
+            if (["a", "c", "v", "x", "z"].includes(event.key.toLowerCase())) {
+                return;
+            }
+        }
+
+        if (allowedKeys.includes(event.key)) {
+            const step = 1;
+            const currentValue = parseFloat(this.value);
+            const isValidNumber =
+                !isNaN(currentValue) && isFinite(currentValue);
+
+            function getDecimalCount(value) {
+                if (Math.floor(value) === value) return 0;
+                return value.toString().split(".")[1]?.length || 0;
+            }
+
+            const decimalCount = isValidNumber
+                ? getDecimalCount(currentValue)
+                : 0;
+            const maxLimit = 999999;
+
+            if (event.key === "ArrowUp") {
+                event.preventDefault();
+                const baseValue = isValidNumber ? currentValue : 0;
+                const newValue = baseValue + step;
+                if (newValue > maxLimit) {
+                    this.value = maxLimit.toFixed(0);
+                } else {
+                    this.value = newValue.toFixed(decimalCount);
+                }
+            } else if (event.key === "ArrowDown") {
+                event.preventDefault();
+                if (isValidNumber && currentValue > 0) {
+                    const newValue = currentValue - step;
+                    if (newValue <= 0) {
+                        this.value = "";
+                    } else {
+                        this.value = newValue.toFixed(decimalCount);
+                    }
+                }
+            }
+            return;
+        }
+
+        const isDigit = /^\d$/.test(event.key);
+        const isDot = event.key === ".";
+
+        if (!isDigit && !isDot) {
+            event.preventDefault();
+            return;
+        }
+
         if (isDot && this.value.includes(".")) {
             event.preventDefault();
             return;
@@ -1677,6 +1981,8 @@ document.addEventListener("DOMContentLoaded", () => {
         updateButtonState(status);
         // NUEVO: Limpiar estado inicial cuando el proceso termina
         initialModes = undefined;
+        // CORREGIDO BUG #3: Detener timer de tiempo restante cuando el proceso termina
+        stopTimeRemainingTimer();
     };
 
     // CRÍTICO: Guardar funciones de cleanup de IPC listeners
@@ -1697,6 +2003,9 @@ document.addEventListener("DOMContentLoaded", () => {
         observer3.disconnect();
         observer4.disconnect();
         observer5.disconnect(); // NUEVO: Desconectar observer5
+
+        // Limpiar timer de tiempo restante (Issue #2)
+        stopTimeRemainingTimer();
 
         // Limpiar timeouts
         if (tooltipTimeout) {

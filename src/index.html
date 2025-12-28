@@ -123,21 +123,44 @@
                                         step="any"
                                         data-tooltip="Duration to run activation (in minutes)\nLeave empty for unlimited duration"
                                     />
-                                    <span class="input-unit">Min</span>
+                                    <div class="time-unit-container">
+                                        <span
+                                            id="time-remaining"
+                                            class="time-remaining-display"
+                                            style="display: none"
+                                            ><span id="time-remaining-value"
+                                                >--:--</span
+                                            ></span
+                                        >
+                                        <span class="input-unit">Min</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="button-with-label">
                                 <label for="interval">Interval</label>
-                                <div class="input-column-part">
-                                    <input
-                                        type="number"
-                                        id="interval"
-                                        placeholder="S"
-                                        value="60"
-                                        step="any"
-                                        data-tooltip="Time between each activation action (in seconds)\nUse mouse wheel or type to adjust"
-                                    />
-                                    <span class="input-unit">S</span>
+                                <div class="interval-range-container">
+                                    <div class="input-column-part">
+                                        <input
+                                            type="number"
+                                            id="interval"
+                                            placeholder="Min"
+                                            value="60"
+                                            step="any"
+                                            data-tooltip="Minimum interval between activations (in seconds)\nWhen max is set, a random value in range is used"
+                                        />
+                                        <span class="input-unit">S</span>
+                                    </div>
+                                    <span class="interval-separator">-</span>
+                                    <div class="input-column-part">
+                                        <input
+                                            type="number"
+                                            id="interval-max"
+                                            placeholder="Max"
+                                            step="any"
+                                            data-tooltip="Maximum interval (optional)\nLeave empty to use fixed interval\nWhen set, random interval between min and max is used"
+                                        />
+                                        <span class="input-unit">S</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="button-with-label">

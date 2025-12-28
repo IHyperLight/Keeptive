@@ -5,6 +5,7 @@ import win32con
 import win32gui
 import time
 import sys
+import random
 
 virtual_key_codes = {
     "\t": 0x09,  # Tab
@@ -199,7 +200,23 @@ virtual_key_codes = {
 }
 
 
-def clicks(mode, pause, interval, timed, location, click, hold_time, window_strings):
+def clicks(
+    mode,
+    pause,
+    interval_min,
+    interval_max,
+    timed,
+    location,
+    click,
+    hold_time,
+    window_strings,
+):
+    # Función para obtener un intervalo aleatorio si hay rango, o fijo si no
+    def get_interval():
+        if interval_max is not None and interval_max > interval_min:
+            return random.uniform(interval_min, interval_max)
+        return interval_min
+
     # Función para obtener las coordenadas exactas donde hacer click o hacia donde mover el mouse
     def get_location(hwnd):
         # Obtener el rectángulo de la ventana (cliente, es decir, solo el contenido, sin la barra de título)
@@ -465,14 +482,15 @@ def clicks(mode, pause, interval, timed, location, click, hold_time, window_stri
         while True:
             click_system(mode)
             stop_timer(minutes, begin)
+            current_interval = get_interval()
             if end_time is not None:
                 remaining = end_time - time.time()
                 if remaining <= 0:
                     print(f"Time completed", file=sys.stderr)
                     sys.exit(4)
-                time.sleep(min(interval, remaining))
+                time.sleep(min(current_interval, remaining))
             else:
-                time.sleep(interval)
+                time.sleep(current_interval)
 
     # Actualizar valor de pause
     if pause == "true":
@@ -498,20 +516,21 @@ def clicks(mode, pause, interval, timed, location, click, hold_time, window_stri
         for window in windows:
             click_window(window)
         stop_timer(minutes, begin)
+        current_interval = get_interval()
         if end_time is not None:
             remaining = end_time - time.time()
             if remaining <= 0:
                 print(f"Time completed", file=sys.stderr)
                 sys.exit(4)
-            time.sleep(min(interval, remaining))
+            time.sleep(min(current_interval, remaining))
         else:
-            time.sleep(interval)
+            time.sleep(current_interval)
 
 
 if __name__ == "__main__":
     try:
         # Obtener las respuestas desde el main
-        if len(sys.argv) < 8:
+        if len(sys.argv) < 9:
             print(f"Insufficient arguments provided", file=sys.stderr)
             sys.exit(7)
 
@@ -519,17 +538,35 @@ if __name__ == "__main__":
         pause = sys.argv[2]
 
         try:
-            interval = float(sys.argv[3])
-            if interval <= 0:
+            interval_min = float(sys.argv[3])
+            if interval_min <= 0:
                 print(f"Interval must be greater than zero", file=sys.stderr)
                 sys.exit(7)
         except ValueError:
             print(f"Invalid interval value", file=sys.stderr)
             sys.exit(7)
 
+        # Parse interval_max (optional - can be empty string)
+        interval_max = None
         if sys.argv[4] != "":
             try:
-                timed = float(sys.argv[4])
+                interval_max = float(sys.argv[4])
+                if interval_max <= 0:
+                    print(f"Interval max must be greater than zero", file=sys.stderr)
+                    sys.exit(7)
+                if interval_max < interval_min:
+                    print(
+                        f"Interval max must be greater than or equal to interval min",
+                        file=sys.stderr,
+                    )
+                    sys.exit(7)
+            except ValueError:
+                print(f"Invalid interval max value", file=sys.stderr)
+                sys.exit(7)
+
+        if sys.argv[5] != "":
+            try:
+                timed = float(sys.argv[5])
                 if timed <= 0:
                     print(f"Time must be greater than zero", file=sys.stderr)
                     sys.exit(7)
@@ -537,13 +574,13 @@ if __name__ == "__main__":
                 print(f"Invalid time value", file=sys.stderr)
                 sys.exit(7)
         else:
-            timed = sys.argv[4]
+            timed = sys.argv[5]
 
-        location = sys.argv[5]
-        click = sys.argv[6]
+        location = sys.argv[6]
+        click = sys.argv[7]
 
         try:
-            hold_time = float(sys.argv[7])
+            hold_time = float(sys.argv[8])
             if hold_time <= 0:
                 print(f"Hold time must be greater than zero", file=sys.stderr)
                 sys.exit(7)
@@ -551,8 +588,18 @@ if __name__ == "__main__":
             print(f"Invalid hold time value", file=sys.stderr)
             sys.exit(7)
 
-        window_strings = sys.argv[8:]
-        clicks(mode, pause, interval, timed, location, click, hold_time, window_strings)
+        window_strings = sys.argv[9:]
+        clicks(
+            mode,
+            pause,
+            interval_min,
+            interval_max,
+            timed,
+            location,
+            click,
+            hold_time,
+            window_strings,
+        )
     except Exception as e:
         print(f"Unexpected error: {e}", file=sys.stderr)
         sys.exit(8)

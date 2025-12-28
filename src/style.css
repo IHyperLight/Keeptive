@@ -220,6 +220,63 @@ input[type="number"]::-webkit-outer-spin-button {
     opacity: 0.5;
 }
 
+/* Interval range container for min-max intervals (Issue #1) */
+.interval-range-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.42rem;
+}
+
+.interval-separator {
+    color: #a0a0a0;
+    font-size: 13px;
+    font-weight: lighter;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+    margin-top: 0.4rem;
+    opacity: 0.7;
+}
+
+/* Time remaining display (Issue #2) */
+.time-unit-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+}
+
+.time-remaining-display {
+    text-align: center;
+    line-height: 1;
+}
+
+#time-remaining-value {
+    font-size: 12px;
+    font-weight: lighter;
+    color: #00ffc2;
+    text-shadow: 0px 0px 15px rgba(0, 255, 194, 0.5);
+    background: linear-gradient(90deg, #00ff0a, #00ffc2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.time-unit-container .input-unit {
+    margin-top: 0;
+    line-height: 1;
+}
+
+@keyframes pulse-glow {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
 #external-button,
 #toggle-external-button {
     margin-top: 1rem;
@@ -550,7 +607,7 @@ hr {
     flex-direction: row;
     gap: 1.25rem;
     align-items: center;
-    flex-shrink: 0;
+    flex-wrap: wrap;
 }
 
 #mode {

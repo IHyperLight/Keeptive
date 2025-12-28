@@ -935,7 +935,7 @@ function createWindow() {
     validateIconFiles();
 
     mainWindow = new BrowserWindow({
-        width: 932,
+        width: 1100,
         height: 732,
         minWidth: 500,
         minHeight: 400,
