@@ -40,7 +40,7 @@
 
 ## ▶️ Getting Started
 
--   **1.** Download the [latest release here](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.0).
+-   **1.** Download the [latest release here](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.1).
 
 -   **2.** Unzip, open the folder and run the executable (Keeptive.exe).
 
