@@ -2,11 +2,11 @@
 
 <div align="center">
 
-[![Download Keeptive v1.2.0](https://img.shields.io/badge/Download-Keeptive%20v1.2.0-7C4DFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.0)
+[![Download Keeptive v1.2.1](https://img.shields.io/badge/Download-Keeptive%20v1.2.1-7C4DFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.1)
 
 </div>
 
-![Keeptive UI](https://github.com/user-attachments/assets/9b9eab2f-a9d6-4075-9105-9335a6429721)
+![Keeptive UI](https://github.com/user-attachments/assets/51a78308-73be-4894-af43-a0908df3003a)
 
 ## ✅ Overview
 
@@ -40,7 +40,7 @@
 
 ## ▶️ Getting Started
 
--   **1.** Download the [latest release here](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.0).
+-   **1.** Download the [latest release here](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.1).
 
 -   **2.** Unzip, open the folder and run the executable (Keeptive.exe).
 
@@ -91,10 +91,10 @@
 
 ## ✔️ How To Use
 
-![Keeptive 1](https://github.com/user-attachments/assets/330c4c1c-dc9f-4664-a3ea-a9b3a859dfc7)
-![Keeptive 2](https://github.com/user-attachments/assets/417edcd1-8c6d-4bd0-b8eb-108fceb49c3c)
-![Keeptive 3](https://github.com/user-attachments/assets/b15a634f-12e0-4076-8a5a-0168a9577bbf)
-![Keeptive 4](https://github.com/user-attachments/assets/04adb428-0e18-4d85-a9b8-4db8b34a27a2)
+![Keeptive 1](https://github.com/user-attachments/assets/334d3fc7-85bd-4b6e-9e36-9b3aa97b79c4)
+![Keeptive 2](https://github.com/user-attachments/assets/df30aa37-ab38-4bab-9efc-fec5c721a720)
+![Keeptive 3](https://github.com/user-attachments/assets/960a0841-85c4-4846-9d08-c580b2a7f6a5)
+![Keeptive 4](https://github.com/user-attachments/assets/ac0a38b5-0189-417a-8b4b-c2ef3a452290)
 
 ---
 
