@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Download Keeptive v1.2.1](https://img.shields.io/badge/Download-Keeptive%20v1.2.0-7C4DFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.1)
+[![Download Keeptive v1.2.1](https://img.shields.io/badge/Download-Keeptive%20v1.2.1-7C4DFF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/IHyperLight/Keeptive/releases/tag/v1.2.1)
 
 </div>
 
